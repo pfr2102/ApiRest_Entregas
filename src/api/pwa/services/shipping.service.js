@@ -149,18 +149,42 @@ export const updateShipping = async (id, newData) => {
 
 //===========================================================DELETE===========================================================
 export const deleteShippingByValue = async (valueToDelete) => {
+    let bitacora = BITACORA();
+    let data = DATA();
+  
     try {
+      bitacora.process = `Eliminar la Entrega con Valor ${valueToDelete}`;
+      data.method = "DELETE";
+      data.api = `/shipping/${valueToDelete}`;
+      data.process = "Eliminar la Entrega en la colección de Entregas";
+  
       // Realiza la eliminación del documento en función del valor proporcionado
       const result = await Shippings.deleteOne({ id_ordenOK: valueToDelete });
   
       if (result.deletedCount === 0) {
-        // Si no se encontró un documento para eliminar, lanza un error
-        throw new Error("Entrega no encontrado.");
+        data.status = 404;
+        data.messageDEV = `No se encontró una Entrega con el valor ${valueToDelete}`;
+        throw Error(data.messageDEV);
       }
   
-      return { message: "Entrega eliminado correctamente." };
+      data.status = 200;
+      data.messageUSR = "Entrega eliminada correctamente";
+  
+      bitacora = AddMSG(bitacora, data, 'OK', 200, true);
+  
+      return OK(bitacora);
     } catch (error) {
-      throw error;
+      if (!data.status) data.status = error.statusCode;
+      let { message } = error;
+      if (!data.messageDEV) data.messageDEV = message;
+      if (!data.dataRes.length === 0) data.dataRes = error;
+      data.messageUSR = `La eliminación de la Entrega con valor ${valueToDelete} falló`;
+  
+      bitacora = AddMSG(bitacora, data, 'FAIL');
+  
+      return FAIL(bitacora);
+    } finally {
+      // Haya o no error siempre ejecuta aquí
     }
-  };
+  };  
 //===========================================================FIN DELETE===========================================================

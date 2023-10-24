@@ -80,5 +80,3 @@ const model = obtenerModelo('Shippings',
 						  dbCluster);
 
 export default model;
-
-
