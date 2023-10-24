@@ -1,4 +1,4 @@
-import Entregas from '../models/Institutes';
+import Entregas from '../models/shipping';
 import { OK, FAIL, BITACORA, DATA, AddMSG } from '../../../middlewares/respPWA.handler';
 
 
@@ -48,49 +48,6 @@ export const getEntregasAll = async() => {
     }
 }
 
-//OBTENER DOCUMENTOS POR EL ESTATUS DE LA DEVOLUCION
-// export const getInstitutesByStatus = async (status) => {
-//     let bitacora = BITACORA();
-//     let data = DATA();
-
-//     try {
-//         bitacora.process = `Extraer Institutos con estado "${status}"`;
-//         data.method = "GET";
-//         data.api = `/institutes?estado=${status}`;
-//         data.process = `Extraer Institutos con estado "${status}" de la colección de cat_institutos`;
-
-//         // Utiliza el método find de Mongoose para buscar documentos con un estado específico
-//         const InstitutesByStatus = await Institutos.find({ estado: status });
-
-//         if (InstitutesByStatus.length === 0) {
-//             data.status = 404;
-//             data.messageDEV = `No se encontraron Institutos con estado "${status}"`;
-//             throw Error(data.messageDEV);
-//         }
-
-//         data.status = 200;
-//         data.messageUSR = `La extracción de Institutos con estado "${status}" tuvo éxito`;
-//         data.dataRes = InstitutesByStatus;
-
-//         bitacora = AddMSG(bitacora, data, 'OK', 200, true);
-
-//         return OK(bitacora);
-
-//     } catch (error) {
-//         if (!data.status) data.status = error.statusCode;
-//         let { message } = error;
-//         if (!data.messageDEV) data.messageDEV = message;
-//         if (!data.dataRes.length === 0) data.dataRes = error;
-//         data.messageUSR = `La extracción de Institutos con estado "${status}" no tuvo éxito`;
-
-//         bitacora = AddMSG(bitacora, data, 'FAIL');
-
-//         return FAIL(bitacora);
-//     }
-//     finally {
-//         // Haya o no error, siempre se ejecuta aquí
-//     }
-// }
 //===========================================================FING GET===========================================================
 
 
