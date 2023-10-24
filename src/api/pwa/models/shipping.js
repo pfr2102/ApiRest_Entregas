@@ -4,7 +4,7 @@ import obtenerConexion from '../../../config/connectionsFactory';
 import obtenerModelo from '../../../config/modelsFactory';
 
 
-const entregasSchemaPWA = new mongoose.Schema({
+const shippingsSchemaPWA = new mongoose.Schema({
 	id_ordenOK: { type: String },
 	id_domicilioOK: { type: String },
 	id_proveedorOK: { type: String },
@@ -73,17 +73,12 @@ const dbCluster = config.CLUSTER;
   
 const conn =  obtenerConexion(dbName, dbCluster);
 	
-const model = obtenerModelo('Entregas', 
-						  config.PLATFORM==='PWA' ? entregasSchemaPWA : entregasSchemaPWA,
+const model = obtenerModelo('Shippings', 
+						shippingsSchemaPWA,
 						  conn, 
 						  dbName, 
 						  dbCluster);
 
 export default model;
 
-/* export default mongoose.model(
-	'cat_institutos',
-	config.PLATFORM==='PWA' ? institutesSchemaPWA : institutesSchemaWEB,
-	'cat_institutos'
-);
- */
+

@@ -1,13 +1,13 @@
-import * as entregaServices from '../services/institutes.service';
+import * as shippingServices from '../services/shipping.service';
 
 //*************************************************************************************************** */
 // GET
-export const getEntregasAll = async(req, res, next) => {
+export const getShippingsAll = async(req, res, next) => {
     try{
-        const entregasAll = await entregaServices.getEntregasAll();
+        const shippingsAll = await shippingServices.getShippingsAll();
         
-        if(entregasAll) {
-            return res.status(entregasAll.status).json(entregasAll);
+        if(shippingsAll) {
+            return res.status(shippingsAll.status).json(shippingsAll);
         }
     }catch(error){
         next(error);
@@ -37,12 +37,12 @@ export const getInstitutesByStatus = async (req, res, next) => {
 //*************************************************************************************************** */
 // POST
 
-export const addEntregas = async(req, res, next) => {
+export const addShippings = async(req, res, next) => {
     try{
-        const entregasAdded = await entregaServices.addEntregas(req.body);
+        const shippingsAdded = await shippingServices.addShippings(req.body);
         
-        if(entregasAdded) {
-            return res.status(entregasAdded.status).json(entregasAdded);
+        if(shippingsAdded) {
+            return res.status(shippingsAdded.status).json(shippingsAdded);
         }
     }catch(error){
         next(error);
@@ -54,12 +54,12 @@ export const addEntregas = async(req, res, next) => {
 //*************************************************************************************************** */
 // PUT
 //Feak: 
-export const updateEntrega = async (req, res, next) => {
+export const updateShipping = async (req, res, next) => {
     try {
         const { id } = req.params; // Obtén el ID de la entrega desde los parámetros de la solicitud
         const newData = req.body; // Obtén los nuevos datos desde el cuerpo de la solicitud
 
-        const result = await entregaServices.updateEntrega(id, newData);
+        const result = await shippingServices.updateShipping(id, newData);
 
         if (result.status === 200) {
             return res.status(200).json(result);
@@ -76,12 +76,12 @@ export const updateEntrega = async (req, res, next) => {
 //*************************************************************************************************** */
 // DELETE
 //Feak: 
-export const deleteEntregaByValue = async (req, res, next) => {
+export const deleteShippingByValue = async (req, res, next) => {
     try {
       const { valueToDelete } = req.params; // Obtén el valor a eliminar de los parámetros de la solicitud
   
       // Llama al servicio de eliminación y pasa el valor a eliminar
-      const result = await entregaServices.deleteEntregaByValue(valueToDelete);
+      const result = await shippingServices.deleteShippingByValue(valueToDelete);
   
       return res.status(200).json(result);
     } catch (error) {
