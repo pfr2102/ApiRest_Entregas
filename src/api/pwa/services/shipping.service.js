@@ -48,6 +48,45 @@ export const getShippingsAll = async() => {
     }
 }
 
+export const getShippingById = async (id) => {
+    let bitacora = BITACORA();
+    let data = DATA();
+
+    try {
+        bitacora.process = `Obtener Entrega por ID: ${id}`;
+        data.method = "GET";
+        data.api = `/shipping/${id}`;
+        data.process = `Obtener una Entrega específica de la colección de Entregas por su ID`;
+
+        const shipping = await Shippings.findOne({ id_ordenOK: id });
+        if (!shipping) {
+            data.status = 404;
+            data.messageDEV = `No se encontró una Entrega con el ID ${id}.`;
+            throw Error(data.messageDEV);
+        }
+
+        data.status = 200;
+        data.messageUSR = "La obtención de la Entrega <<SI>> tuvo éxito";
+        data.dataRes = shipping;
+
+        bitacora = AddMSG(bitacora, data, 'OK', 200, true);
+
+        return OK(bitacora);
+
+    } catch (error) {
+        if (!data.status) data.status = error.statusCode;
+        let { message } = error;
+        if (!data.messageDEV) data.messageDEV = message;
+        if (!data.dataRes.length === 0) data.dataRes = error;
+        data.messageUSR = "La obtención de la Entrega <<NO>> tuvo éxito";
+
+        bitacora = AddMSG(bitacora, data, 'FAIL');
+
+        return FAIL(bitacora);
+    } finally {
+        //Haya o no error siempre ejecuta aqui
+    }
+}
 //===========================================================FING GET===========================================================
 
 
@@ -148,22 +187,22 @@ export const updateShipping = async (id, newData) => {
 //===========================================================FIN PUT===========================================================
 
 //===========================================================DELETE===========================================================
-export const deleteShippingByValue = async (valueToDelete) => {
+export const deleteShippingByValue = async (id) => {
     let bitacora = BITACORA();
     let data = DATA();
   
     try {
-      bitacora.process = `Eliminar la Entrega con Valor ${valueToDelete}`;
+      bitacora.process = `Eliminar la Entrega con Valor ${id}`;
       data.method = "DELETE";
-      data.api = `/shipping/${valueToDelete}`;
+      data.api = `/shipping/${id}`;
       data.process = "Eliminar la Entrega en la colección de Entregas";
   
       // Realiza la eliminación del documento en función del valor proporcionado
-      const result = await Shippings.deleteOne({ id_ordenOK: valueToDelete });
+      const result = await Shippings.deleteOne({ id_ordenOK: id });
   
       if (result.deletedCount === 0) {
         data.status = 404;
-        data.messageDEV = `No se encontró una Entrega con el valor ${valueToDelete}`;
+        data.messageDEV = `No se encontró una Entrega con el valor ${id}`;
         throw Error(data.messageDEV);
       }
   
@@ -178,7 +217,7 @@ export const deleteShippingByValue = async (valueToDelete) => {
       let { message } = error;
       if (!data.messageDEV) data.messageDEV = message;
       if (!data.dataRes.length === 0) data.dataRes = error;
-      data.messageUSR = `La eliminación de la Entrega con valor ${valueToDelete} falló`;
+      data.messageUSR = `La eliminación de la Entrega con valor ${id} falló`;
   
       bitacora = AddMSG(bitacora, data, 'FAIL');
   

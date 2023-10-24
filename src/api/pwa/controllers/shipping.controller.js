@@ -14,23 +14,19 @@ export const getShippingsAll = async(req, res, next) => {
     }
 };
 
-//GET DOCUMENTSBYSTATUS
-export const getInstitutesByStatus = async (req, res, next) => {
+export const getShippingByIdController = async (req, res, next) => {
     try {
-        const { estado } = req.query; // Obtiene el estado desde la URL
-        
-        if (!estado) {
-            return res.status(400).json({ message: 'El parámetro estado es requerido.' });
+        const { id } = req.params; // Obtén el valor a consultar de los parámetros de la solicitud
+    
+        // Llamar a la función para buscar y pasa el valor
+        const result = await shippingServices.getShippingById(id);
+    
+        if(result) {
+            return res.status(result.status).json(result);
         }
-
-        const institutesByStatus = await institutesServices.getInstitutesByStatus(estado);
-        
-        if (institutesByStatus) {
-            return res.status(institutesByStatus.status).json(institutesByStatus);
-        }
-    } catch (error) {
+      } catch (error) {
         next(error);
-    }
+      }
 };
 // FIN GET
 //*************************************************************************************************** */
@@ -78,10 +74,10 @@ export const updateShipping = async (req, res, next) => {
 //Feak: 
 export const deleteShippingByValue = async (req, res, next) => {
     try {
-      const { valueToDelete } = req.params; // Obtén el valor a eliminar de los parámetros de la solicitud
+      const { id } = req.params; // Obtén el valor a eliminar de los parámetros de la solicitud
   
       // Llama al servicio de eliminación y pasa el valor a eliminar
-      const result = await shippingServices.deleteShippingByValue(valueToDelete);
+      const result = await shippingServices.deleteShippingByValue(id);
   
       return res.status(200).json(result);
     } catch (error) {
