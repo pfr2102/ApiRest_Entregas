@@ -58,7 +58,11 @@ export const getShippingById = async (id) => {
         data.api = `/shipping/${id}`;
         data.process = `Obtener una Entrega específica de la colección de Entregas por su ID`;
 
-        const shipping = await Shippings.findOne({ id_ordenOK: id });
+        const shipping = await Shippings.findOne({ id_ordenOK: id
+            //26/10/2023 - Sepa la verga que diferencia haya, funciona sin esto en postman y por medio de params
+        // id_ordenOK: params.id_ordenOK,
+        // idEtiquetaOK: params.IdEtiquetaOK,
+        });
         if (!shipping) {
             data.status = 404;
             data.messageDEV = `No se encontró una Entrega con el ID ${id}.`;
@@ -152,7 +156,11 @@ export const updateShipping = async (id, newData) => {
         data.process = "Actualizar la Entrega en la colección de Entregas";
 
         // Aquí realizas la actualización de la entrega
-        const updatedShipping = await Shippings.findOneAndUpdate({ id_ordenOK: id }, newData, {
+        const updatedShipping = await Shippings.findOneAndUpdate({ id_ordenOK: id 
+            //26/10/2023 - Sepa la verga que diferencia haya, funciona sin esto en postman y por medio de params
+        // id_ordenOK: params.id_ordenOK,
+        // idEtiquetaOK: params.IdEtiquetaOK,
+        }, newData, {
             new: true, // Esto te devolverá el documento actualizado en lugar del anterior
         });
 
@@ -198,7 +206,11 @@ export const deleteShippingByValue = async (id) => {
       data.process = "Eliminar la Entrega en la colección de Entregas";
   
       // Realiza la eliminación del documento en función del valor proporcionado
-      const result = await Shippings.deleteOne({ id_ordenOK: id });
+      const result = await Shippings.deleteOne({ id_ordenOK: id 
+            //26/10/2023 - Sepa la verga que diferencia haya, funciona sin esto en postman y por medio de params
+        // id_ordenOK: params.id_ordenOK,
+        // idEtiquetaOK: params.IdEtiquetaOK,
+        });
   
       if (result.deletedCount === 0) {
         data.status = 404;
