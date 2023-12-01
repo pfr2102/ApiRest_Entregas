@@ -5,69 +5,125 @@ import obtenerModelo from '../../../config/modelsFactory';
 
 
 const shippingsSchemaPWA = new mongoose.Schema({
-	id_ordenOK: { type: String },
-	id_domicilioOK: { type: String },
-	id_proveedorOK: { type: String },
-	usuario: {
-		_id: false,
-		id_usuarioOK: {type: String},
-		nombre: {type: String},
-		correo_electronico: {type: String},
-		telefono: {type: String},
-	},
-	envio: {
-		_id: false,
-		fecha_pedido: {type: String},
-		metodo_envio: {type: String},
-		direccion_entrega: {
-			calle: {type: String}, 
-			ciudad: {type: String},
-			codigo_postal: {type: String},
-			estado: {type: String},
-			pais: {type: String},
-		},
-		productos: [
-			{
-				_id: false,
-				id_producto: {type: String},
-				nombre: {type: String},
-				cantidad: {type: String},
-				precio_unitario: {type: String},
-			},
-		],
-		costo_envio: {type: String},
-		codigo_seguridad: {type: String},
-	},
-	empresa_logistica: {
-		nombre: {type: String},
-		contacto: {
-			nombre:{type: String},
-			telefono:{type: String},
-			correo_electronico: {type: String},
-		},
-	},
-	rastreo: {
-		estado_actual: {type: String},
-		fecha_actualizacion: {type : Date, default: Date.now},
-		detalles: [
-			{
-				estado: {type: String},
-				fecha: {type : Date, default: Date.now},
-				ubicacion: {type: String},
-			}
-		]
-	},
-	devolucion: {
-		estado: {type: String},
-		motivo: {type: String},
-		fecha_solicitud: {type : Date, default: Date.now},
-		detalles: {type: String},
-		id_envio_dev: {type: String},
-	}
+	IdEntregaOK: { type: String },
+	IdEntregaBK: { type: String },
+	IdOrdenOK: { type: String },
+    info_ad: [
+        {
+            _id: false,
+            IdEtiquetaOK: { type: String }, 
+            IdEtiqueta: { type: String },
+            Etiqueta: { type: String },
+            Valor: { type: String },
+            IdTipoSeccionOK: { type: String },
+            Secuencia: { type: Number },
+            detail_row: {
+                _id: false,
+                Activo: { type: String },
+                Borrado: { type: String },
+                detail_row_reg: [
+                    {
+                        _id: false,
+                        FechaReg: {type : String},
+                        UsuarioReg: { type: String },
+                    }
+                ]
+            }
+        }
+    ],
+    envios: [
+        {
+            _id: false,
+            IdDomicilioOK: { type: String },
+            IdPaqueteriaOK: { type: String },
+            IdTipoMetodoEnvio: { type: String },
+            CostoEnvio: { type: Number },
+            info_ad: [
+                {
+                    _id: false,
+                    IdEtiquetaOK: { type: String },
+                    IdEtiqueta: { type: String },
+                    Etiqueta: { type: String },
+                    Valor: { type: String },
+                    IdTipoSeccionOK: { type: String },
+                    Secuencia: { type: Number },
+                    detail_row: {
+                        _id: false,
+                        Activo: { type: String },
+                        Borrado: { type: String },
+                        detail_row_reg: [
+                            {
+                                _id: false,
+                                FechaReg: {type : String},
+                                UsuarioReg: { type: String },
+                            }
+                        ]
+                    }
+                }
+            ],
+            productos: [
+                {
+                    _id: false,
+                    IdProdServOK: { type: String }, //Sacar de la api de ordenes
+                    IdPresentaOK: { type: String }, //Tambor
+                }
+            ],
+            estatus: [
+                {
+                    _id: false,
+                    IdTipoEstatusOK: { type: String },
+                    Actual: { type: String },
+                    Observacion: { type: String },
+                    detail_row: {
+                        _id: false,
+                        Activo: { type: String },
+                        Borrado: { type: String },
+                        detail_row_reg: [
+                            {
+                                _id: false,
+                                FechaReg: {type : String},
+                                UsuarioReg: { type: String },
+                            }
+                        ]
+                    }
+                }
+            ],
+            rastreos: {
+                _id: false,
+                NumeroGuia: { type: String },
+                IdRepartidorOK: { type: String },
+                NombreRepartidor: { type: String },
+                Alias: { type: String },
+                seguimiento: [
+                    {
+                        _id: false,
+                        Ubicacion: { type: String },
+                        DesUbicacion: { type: String },
+                        Referencias: { type: String },
+                        Observacion: { type: String },
+                        FechaReg: {type : String},
+                        UsuarioReg: { type: String },
+                    }
+                ]
+            }
+        }
+    ],
+    detail_row: {
+        _id: false,
+        Activo: { type: String },
+        Borrado: { type: String },
+        detail_row_reg: [
+            {
+                _id: false,
+                FechaReg: {type : String},
+                UsuarioReg: { type: String },
+            }
+        ]
+    }
 });
 
 
-//FIC: *******************************************************************
+//FIC: ***********************
 const dbName = config.DATABASE;
 const dbCluster = config.CLUSTER;
   
