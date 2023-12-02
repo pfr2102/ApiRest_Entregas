@@ -19,12 +19,12 @@ const shippingsSchemaPWA = new mongoose.Schema({
             Secuencia: { type: Number },
             detail_row: {
                 _id: false,
-                Activo: { type: String },
-                Borrado: { type: String },
+                Activo: { type: String, default: 'S' },
+                Borrado: { type: String, default: 'N' },
                 detail_row_reg: [
                     {
                         _id: false,
-                        FechaReg: {type : String},
+                        FechaReg: {type : Date, default: Date.now},
                         UsuarioReg: { type: String },
                     }
                 ]
@@ -49,12 +49,12 @@ const shippingsSchemaPWA = new mongoose.Schema({
                     Secuencia: { type: Number },
                     detail_row: {
                         _id: false,
-                        Activo: { type: String },
-                        Borrado: { type: String },
+                        Activo: { type: String, default: 'S' },
+                        Borrado: { type: String, default: 'N' },
                         detail_row_reg: [
                             {
                                 _id: false,
-                                FechaReg: {type : String},
+                                FechaReg: {type : Date, default: Date.now},
                                 UsuarioReg: { type: String },
                             }
                         ]
@@ -65,7 +65,11 @@ const shippingsSchemaPWA = new mongoose.Schema({
                 {
                     _id: false,
                     IdProdServOK: { type: String }, //Sacar de la api de ordenes
-                    IdPresentaOK: { type: String }, //Tambor
+                    IdPresentaOK: { type: String }, //Tambien
+                    DesProdServ: { type: String },
+                    DesPresenta: { type: String },
+                    CantidadPed: { type: Number },
+                    CantidadEnt: { type: Number },
                 }
             ],
             estatus: [
@@ -76,12 +80,12 @@ const shippingsSchemaPWA = new mongoose.Schema({
                     Observacion: { type: String },
                     detail_row: {
                         _id: false,
-                        Activo: { type: String },
-                        Borrado: { type: String },
+                        Activo: { type: String, default: 'S' },
+                        Borrado: { type: String, default: 'N' },
                         detail_row_reg: [
                             {
                                 _id: false,
-                                FechaReg: {type : String},
+                                FechaReg: {type : Date, default: Date.now},
                                 UsuarioReg: { type: String },
                             }
                         ]
@@ -101,7 +105,7 @@ const shippingsSchemaPWA = new mongoose.Schema({
                         DesUbicacion: { type: String },
                         Referencias: { type: String },
                         Observacion: { type: String },
-                        FechaReg: {type : String},
+                        FechaReg: {type : Date, default: Date.now},
                         UsuarioReg: { type: String },
                     }
                 ]
@@ -110,12 +114,12 @@ const shippingsSchemaPWA = new mongoose.Schema({
     ],
     detail_row: {
         _id: false,
-        Activo: { type: String },
-        Borrado: { type: String },
+        Activo: { type: String, default: 'S' },
+        Borrado: { type: String, default: 'N' },
         detail_row_reg: [
             {
                 _id: false,
-                FechaReg: {type : String},
+                FechaReg: {type : Date, default: Date.now},
                 UsuarioReg: { type: String },
             }
         ]
