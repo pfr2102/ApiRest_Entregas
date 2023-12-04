@@ -4,19 +4,11 @@ import * as shippingsController from '../controllers/shipping.controller';
 const router = Router();
 
 router.get('/', shippingsController.getShippingsAll);
-
-    //26/10/2023 - Sepa la verga que diferencia haya, funciona sin esto en postman y por medio de params
-//params: ['IdInstitutoOK', 'IdEtiquetaOK']
-//router.get('/one', shippingsController.getShippingsOne);
-
 router.get('/:id', shippingsController.getShippingByIdController);
 router.post('/', shippingsController.addShippings);
+router.post('/:id', shippingsController.addShippingsId); //Para hacer un post con id para los subdocumentos
 router.put('/:id', shippingsController.updateShipping);
-
-    //26/10/2023 - Sepa la verga que diferencia haya, funciona sin esto en postman y por medio de params
-//params: ['IdInstitutoOK', 'IdEtiquetaOK']
-//router.put('/', shippingsController.updateShipping);
-
 router.delete('/:id', shippingsController.deleteShippingByValue);
+router.patch('/:id', shippingsController.updateProduct);
 
 export default router;  

@@ -44,6 +44,20 @@ export const addShippings = async(req, res, next) => {
         next(error);
     }
 };
+
+//PARA POST DE ID E INSERTAR EN SUBDOCUMENTOS
+export const addShippingsId = async (req, res, next) => {
+    try {
+        const shippingId = req.params.id; // Obtener el ID de la URL
+        const shippingsAdded = await shippingServices.addShippingsId(req.body, shippingId);
+
+        if (shippingsAdded) {
+            return res.status(shippingsAdded.status).json(shippingsAdded);
+        }
+    } catch (error) {
+        next(error);
+    }
+};
 // FIN POST
 //*************************************************************************************************** */
 
@@ -85,4 +99,23 @@ export const deleteShippingByValue = async (req, res, next) => {
     }
   };
 // FIN DELETE
+//*************************************************************************************************** */
+
+//*************************************************************************************************** */
+// PATCH
+//Feak: 
+export const updateProduct = async (req, res, next) => {
+    try {
+        const productId = req.params.id;
+        const updateData = req.body;
+        const productUpdated = await shippingServices.updateProduct(productId,updateData);
+        if (productUpdated) {
+            productUpdated.session = null;
+            return res.status(productUpdated.status).json(productUpdated);
+        }
+    } catch (error) {
+        next(error);
+    }
+};
+// FIN PATCH
 //*************************************************************************************************** */

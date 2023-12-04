@@ -162,6 +162,54 @@ export const addShippings = async(newShipping) => {
         //Haya o no error siempre ejecuta aqui
     }
 }
+
+//POST CON ID PARA INSERTAR EN SUBDOCUMENTOS
+export const addShippingsId = async (newShipping, shippingId) => {
+    let bitacora = BITACORA();
+    let data = DATA();
+
+    try {
+        bitacora.process = "Agregar una nueva Entrega";
+        data.method = "POST";
+        data.api = `/shipping/${shippingId}`;
+        data.process = "Agregar una nueva entrega a la colección de Entregas";
+
+        // Incorporamos el shippingId a los datos de envío
+        newShipping.shippingId = shippingId;
+
+        const result = await Shippings.updateOne(
+            { IdEntregaOK: shippingId }, // Pasar el id del documento principal donde se va guardar el subdocumento
+            { $push: { info_ad: newShipping } } // Pasar el array (subdocumento) que es parte del documento principal
+        );
+
+        if (result.nModified === 0) {
+            data.status = 400;
+            data.messageDEV = "La inserción de la Entrega <<NO>> fue exitosa";
+            throw Error(data.messageDEV);
+        }
+
+        data.status = 201;
+        data.messageUSR = "La inserción de la Entrega <<SI>> fue exitosa";
+        data.dataRes = result;
+
+        bitacora = AddMSG(bitacora, data, 'OK', 201, true);
+
+        return OK(bitacora);
+
+    } catch (error) {
+        if (!data.status) data.status = error.statusCode;
+        let { message } = error;
+        if (!data.messageDEV) data.messageDEV = message;
+        if (!data.dataRes.length === 0) data.dataRes = error;
+        data.messageUSR = "La inserción de la Entrega <<NO>> fue exitosa";
+
+        bitacora = AddMSG(bitacora, data, 'FAIL');
+
+        return FAIL(bitacora);
+    } finally {
+        // Haya o no error siempre ejecuta aquí
+    }
+};
 //===========================================================FIN POST===========================================================
 
 //===========================================================PUT===========================================================
@@ -251,3 +299,62 @@ export const deleteShippingByValue = async (id) => {
     }
   };  
 //===========================================================FIN DELETE===========================================================
+
+//===========================================================PATCH================================================================
+export const updateProduct = async (productId, updateData) => {
+    let bitacora = BITACORA();
+    let data = DATA();
+    try {
+        bitacora.process = 'Modificar un producto.';
+        data.process = 'Modificar un producto';
+        data.method = 'PATCH';
+        data.api = '/shipping';
+        //Actualizar cada propiedad de updateData
+        //NOTA, si se le manda un nombre distinto de un subdocumento, no pasará nada
+        let productoUpdated = null
+        for (const obj of updateData) {
+            for (const propiedad in obj) {
+                if (obj.hasOwnProperty(propiedad)) {
+                    const updateQuery = {};
+                    updateQuery[propiedad] = obj[propiedad];
+                    try {
+                        productoUpdated = await Shippings.findOneAndUpdate(
+                        { IdEntregaOK: productId },
+                        updateQuery,
+                        { new: true }
+                    );
+                    if (!productoUpdated) {
+                        console.error("No se encontró un documento para actualizar con ese ID,",productId);
+                        data.status = 400;
+                        data.messageDEV = 'La Actualización de un Subdocumento del producto NO fue exitoso.';
+                        throw new Error(data.messageDEV);
+                    }
+                    } catch (error) {
+                        console.error(error);
+                        data.status = 400;
+                        data.messageDEV = 'La Actualizacion de un Subdocumento del producto NO fue exitoso.';
+                        throw Error(data.messageDEV);
+                    }
+                }
+            }
+       
+        }
+        data.messageUSR = 'La Modificacion de los subdocumentos de producto SI fue exitoso.';
+        data.dataRes = productoUpdated;
+        bitacora = AddMSG(bitacora, data, 'OK', 201, true);
+        return OK(bitacora);
+    } catch (error) {
+        console.error(error)
+        if (!data.status) data.status = error.statusCode;
+        let { message } = error;
+        if (!data.messageDEV) data.messageDEV = message;
+        if (data.dataRes.length === 0) data.dataRes = error;
+        data.messageUSR =
+            'La Modificacionión del producto NO fue exitoso.' +
+            '\n' +
+            'Any operations that already occurred as part of this transaction will be rolled back.';
+        bitacora = AddMSG(bitacora, data, 'FAIL');
+        return FAIL(bitacora);
+    }
+};
+//===========================================================FIN PATCH============================================================
