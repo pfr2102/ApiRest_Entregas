@@ -2,7 +2,7 @@ import * as shippingServices from '../services/shipping.service';
 
 //*************************************************************************************************** */
 // GET
-export const getShippingsAll = async(req, res, next) => {
+export const GetAllShippings = async(req, res, next) => {
     try{
         const shippingsAll = await shippingServices.getShippingsAll();
         
@@ -14,26 +14,26 @@ export const getShippingsAll = async(req, res, next) => {
     }
 };
 
-export const getShippingByIdController = async (req, res, next) => {
+export const GetOneShipping = async (req, res, next) => {
     try {
-        const { id } = req.params; // Obtén el valor a consultar de los parámetros de la solicitud
-    
-        // Llamar a la función para buscar y pasa el valor
-        const result = await shippingServices.getShippingById(id);
-    
-        if(result) {
+        const { IdInstitutoOK, IdNegocioOK, IdEntregaOK } = req.query; // Obtén los valores de los query parameters
+
+        // Llamar a la función para buscar y pasa los valores
+        const result = await shippingServices.getShippingByIdService(IdEntregaOK, IdInstitutoOK, IdNegocioOK);
+
+        if (result) {
             return res.status(result.status).json(result);
         }
-      } catch (error) {
+    } catch (error) {
         next(error);
-      }
+    }
 };
 // FIN GET
 //*************************************************************************************************** */
 //*************************************************************************************************** */
 // POST
 
-export const addShippings = async(req, res, next) => {
+export const AddOneShipping = async(req, res, next) => {
     try{
         const shippingsAdded = await shippingServices.addShippings(req.body);
         
@@ -64,12 +64,12 @@ export const addShippingsId = async (req, res, next) => {
 //*************************************************************************************************** */
 // PUT
 //Feak: 
-export const updateShipping = async (req, res, next) => {
+export const UpdateOneShipping = async (req, res, next) => {
     try {
-        const { id } = req.params; // Obtén el ID de la entrega desde los parámetros de la solicitud
+        const { IdInstitutoOK, IdNegocioOK, IdEntregaOK } = req.query; // Obtén los valores de los query parameters
         const newData = req.body; // Obtén los nuevos datos desde el cuerpo de la solicitud
 
-        const result = await shippingServices.updateShipping(id, newData);
+        const result = await shippingServices.updateShippingService(IdInstitutoOK, IdNegocioOK, IdEntregaOK ,newData);
 
         if (result.status === 200) {
             return res.status(200).json(result);
@@ -86,36 +86,24 @@ export const updateShipping = async (req, res, next) => {
 //*************************************************************************************************** */
 // DELETE
 //Feak: 
-export const deleteShippingByValue = async (req, res, next) => {
+export const DeleteOneShipping = async (req, res, next) => {
     try {
-      const { id } = req.params; // Obtén el valor a eliminar de los parámetros de la solicitud
-  
-      // Llama al servicio de eliminación y pasa el valor a eliminar
-      const result = await shippingServices.deleteShippingByValue(id);
-  
-      return res.status(200).json(result);
+        const { IdInstitutoOK, IdNegocioOK, IdEntregaOK } = req.query; // Obtén los valores de los query parameters
+
+        // Llama al servicio de eliminación y pasa los valores a eliminar
+        const result = await shippingServices.deleteShippingByValueService(IdInstitutoOK, IdNegocioOK, IdEntregaOK);
+
+        return res.status(result.status).json(result);
     } catch (error) {
-      next(error);
+        next(error);
     }
-  };
+};
 // FIN DELETE
 //*************************************************************************************************** */
 
 //*************************************************************************************************** */
 // PATCH
 //Feak: 
-export const updateProduct = async (req, res, next) => {
-    try {
-        const productId = req.params.id;
-        const updateData = req.body;
-        const productUpdated = await shippingServices.updateProduct(productId,updateData);
-        if (productUpdated) {
-            productUpdated.session = null;
-            return res.status(productUpdated.status).json(productUpdated);
-        }
-    } catch (error) {
-        next(error);
-    }
-};
+
 // FIN PATCH
 //*************************************************************************************************** */

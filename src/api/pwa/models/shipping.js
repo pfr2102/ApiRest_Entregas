@@ -5,7 +5,9 @@ import obtenerModelo from '../../../config/modelsFactory';
 
 
 const shippingsSchemaPWA = new mongoose.Schema({
-	IdEntregaOK: { type: String },
+	IdInstitutoOK: { type: String },
+    IdNegocioOK: { type: String },
+    IdEntregaOK: { type: String },
 	IdEntregaBK: { type: String },
 	IdOrdenOK: { type: String },
     info_ad: [

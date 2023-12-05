@@ -48,7 +48,7 @@ export const getShippingsAll = async() => {
     }
 }
 
-export const getShippingById = async (id) => {
+export const getShippingByIdService = async (id, IdInstitutoOK, IdNegocioOK) => {
     let bitacora = BITACORA(); // Inicializa la bitácora
     let data = DATA(); // Inicializa los datos de la solicitud
 
@@ -66,7 +66,7 @@ export const getShippingById = async (id) => {
         data.process = `Obtener una Entrega específica de la colección de Entregas por su ID`;
 
         // Busca una entrega en la base de datos por su ID
-        const shipping = await Shippings.findOne({ IdEntregaOK: id });
+        const shipping = await Shippings.findOne({ IdEntregaOK: id, IdInstitutoOK, IdNegocioOK });
 
         if (!shipping) {
             // Si no se encuentra una entrega con el ID especificado, configura los datos de error
@@ -79,7 +79,7 @@ export const getShippingById = async (id) => {
 
         // Establece los datos de éxito en la respuesta
         data.status = 200;
-        data.messageUSR = "La obtención de la Entrega <<SI>> tuvo éxito";
+        data.messageUSR = "La obtención de la Entrega tuvo éxito";
         data.dataRes = shipping;
 
         // Agrega un mensaje de éxito a la bitácora
@@ -99,7 +99,7 @@ export const getShippingById = async (id) => {
         if (!data.dataRes.length === 0) data.dataRes = error; // Establece los datos de error en caso de que no se haya configurado
         
         // Establece el mensaje de error del usuario
-        data.messageUSR = "La obtención de la Entrega <<NO>> tuvo éxito";
+        data.messageUSR = "La obtención de la Entrega no tuvo éxito";
 
         // Agrega un mensaje de fallo a la bitácora
         bitacora = AddMSG(bitacora, data, 'FAIL');
@@ -107,10 +107,9 @@ export const getShippingById = async (id) => {
         // Devuelve una respuesta de error
         return FAIL(bitacora);
     } finally {
-        // La sección "finally" se ejecuta independientemente de si se produce un error o no
-        // Aquí puedes realizar cualquier limpieza necesaria
+        // Aqui se ejecuta independientemente de si se produce un error o no
     }
-}
+};
 //===========================================================FING GET===========================================================
 
 
@@ -213,29 +212,31 @@ export const addShippingsId = async (newShipping, shippingId) => {
 //===========================================================FIN POST===========================================================
 
 //===========================================================PUT===========================================================
-export const updateShipping = async (id, newData) => {
+export const updateShippingService = async (IdInstitutoOK, IdNegocioOK, IdEntregaOK,newData) => {
     let bitacora = BITACORA();
     let data = DATA();
 
     try {
-        bitacora.process = `Actualizar la Entrega con ID ${id}`;
+        bitacora.process = `Actualizar la Entrega con ID ${IdEntregaOK}`;
         data.method = "PUT";
-        data.api = `/shipping/${id}`;
+        data.api = `/shipping`;
         data.process = "Actualizar la Entrega en la colección de Entregas";
 
-        // Aquí realizas la actualización de la entrega
-        const updatedShipping = await Shippings.findOneAndUpdate({ IdEntregaOK: id }, newData, {
-            new: true, // Esto te devolverá el documento actualizado en lugar del anterior
-        });
+        // Actualización de la entrega
+        const updatedShipping = await Shippings.findOneAndUpdate(
+            { IdEntregaOK: IdEntregaOK, IdInstitutoOK: IdInstitutoOK, IdNegocioOK: IdNegocioOK },
+            newData,
+            { new: true } // Para devolver el documento actualizado en vez del anterior
+        );
 
         if (!updatedShipping) {
             data.status = 404;
-            data.messageDEV = `No se encontró una Entrega con el ID ${id}`;
+            data.messageDEV = `No se encontró una Entrega con el ID ${IdEntregaOK}`;
             throw Error(data.messageDEV);
         }
 
         data.status = 200;
-        data.messageUSR = `La Entrega con ID ${id} se actualizó con éxito`;
+        data.messageUSR = `La Entrega con ID ${IdEntregaOK} se actualizó con éxito`;
         data.dataRes = updatedShipping;
 
         bitacora = AddMSG(bitacora, data, 'OK', 200, true);
@@ -246,115 +247,63 @@ export const updateShipping = async (id, newData) => {
         let { message } = error;
         if (!data.messageDEV) data.messageDEV = message;
         if (!data.dataRes.length === 0) data.dataRes = error;
-        data.messageUSR = `La actualización de la Entrega con ID ${id} falló`;
+        data.messageUSR = `La actualización de la Entrega con ID ${IdEntregaOK} falló`;
 
         bitacora = AddMSG(bitacora, data, 'FAIL');
 
         return FAIL(bitacora);
-    }
-    finally {
+    } finally {
         // Haya o no error siempre ejecuta aquí
     }
-}
+};
 //===========================================================FIN PUT===========================================================
 
 //===========================================================DELETE===========================================================
-export const deleteShippingByValue = async (id) => {
+export const deleteShippingByValueService = async (IdInstitutoOK, IdNegocioOK, IdEntregaOK) => {
     let bitacora = BITACORA();
     let data = DATA();
-  
-    try {
-      bitacora.process = `Eliminar la Entrega con Valor ${id}`;
-      data.method = "DELETE";
-      data.api = `/shipping/${id}`;
-      data.process = "Eliminar la Entrega en la colección de Entregas";
-  
-      // Realiza la eliminación del documento en función del valor proporcionado
-      const result = await Shippings.deleteOne({ IdEntregaOK: id });
-  
-      if (result.deletedCount === 0) {
-        data.status = 404;
-        data.messageDEV = `No se encontró una Entrega con el valor ${id}`;
-        throw Error(data.messageDEV);
-      }
-  
-      data.status = 200;
-      data.messageUSR = "Entrega eliminada correctamente";
-  
-      bitacora = AddMSG(bitacora, data, 'OK', 200, true);
-  
-      return OK(bitacora);
-    } catch (error) {
-      if (!data.status) data.status = error.statusCode;
-      let { message } = error;
-      if (!data.messageDEV) data.messageDEV = message;
-      if (!data.dataRes.length === 0) data.dataRes = error;
-      data.messageUSR = `La eliminación de la Entrega con valor ${id} falló`;
-  
-      bitacora = AddMSG(bitacora, data, 'FAIL');
-  
-      return FAIL(bitacora);
-    } finally {
-      // Haya o no error siempre ejecuta aquí
-    }
-  };  
-//===========================================================FIN DELETE===========================================================
 
-//===========================================================PATCH================================================================
-export const updateProduct = async (productId, updateData) => {
-    let bitacora = BITACORA();
-    let data = DATA();
     try {
-        bitacora.process = 'Modificar un producto.';
-        data.process = 'Modificar un producto';
-        data.method = 'PATCH';
-        data.api = '/shipping';
-        //Actualizar cada propiedad de updateData
-        //NOTA, si se le manda un nombre distinto de un subdocumento, no pasará nada
-        let productoUpdated = null
-        for (const obj of updateData) {
-            for (const propiedad in obj) {
-                if (obj.hasOwnProperty(propiedad)) {
-                    const updateQuery = {};
-                    updateQuery[propiedad] = obj[propiedad];
-                    try {
-                        productoUpdated = await Shippings.findOneAndUpdate(
-                        { IdEntregaOK: productId },
-                        updateQuery,
-                        { new: true }
-                    );
-                    if (!productoUpdated) {
-                        console.error("No se encontró un documento para actualizar con ese ID,",productId);
-                        data.status = 400;
-                        data.messageDEV = 'La Actualización de un Subdocumento del producto NO fue exitoso.';
-                        throw new Error(data.messageDEV);
-                    }
-                    } catch (error) {
-                        console.error(error);
-                        data.status = 400;
-                        data.messageDEV = 'La Actualizacion de un Subdocumento del producto NO fue exitoso.';
-                        throw Error(data.messageDEV);
-                    }
-                }
-            }
-       
+        bitacora.process = `Eliminar la Entrega con Valores: ${IdInstitutoOK}, ${IdNegocioOK}, ${IdEntregaOK}`;
+        data.method = "DELETE";
+        data.api = `/shipping`;
+        data.process = "Eliminar la Entrega en la colección de Entregas";
+
+        // Elimina el documento basandose en los valores pasados
+        const result = await Shippings.deleteOne({
+            IdInstitutoOK: IdInstitutoOK,
+            IdNegocioOK: IdNegocioOK,
+            IdEntregaOK: IdEntregaOK
+        });
+
+        if (result.deletedCount === 0) {
+            data.status = 404;
+            data.messageDEV = `No se encontró una Entrega con los valores proporcionados`;
+            throw Error(data.messageDEV);
         }
-        data.messageUSR = 'La Modificacion de los subdocumentos de producto SI fue exitoso.';
-        data.dataRes = productoUpdated;
-        bitacora = AddMSG(bitacora, data, 'OK', 201, true);
+
+        data.status = 200;
+        data.messageUSR = "Entrega eliminada correctamente";
+
+        bitacora = AddMSG(bitacora, data, 'OK', 200, true);
+
         return OK(bitacora);
     } catch (error) {
-        console.error(error)
         if (!data.status) data.status = error.statusCode;
         let { message } = error;
         if (!data.messageDEV) data.messageDEV = message;
-        if (data.dataRes.length === 0) data.dataRes = error;
-        data.messageUSR =
-            'La Modificacionión del producto NO fue exitoso.' +
-            '\n' +
-            'Any operations that already occurred as part of this transaction will be rolled back.';
+        if (!data.dataRes.length === 0) data.dataRes = error;
+        data.messageUSR = "La eliminación de la Entrega falló";
+
         bitacora = AddMSG(bitacora, data, 'FAIL');
+
         return FAIL(bitacora);
+    } finally {
+        // Haya o no error siempre ejecuta aquí
     }
 };
+//===========================================================FIN DELETE===========================================================
+
+//===========================================================PATCH================================================================
+
 //===========================================================FIN PATCH============================================================
