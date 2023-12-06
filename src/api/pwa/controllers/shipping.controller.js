@@ -80,6 +80,20 @@ export const UpdateOneShipping = async (req, res, next) => {
         next(error);
     }
 };
+
+export const updateShippingsId = async (req, res, next) => {
+    try {
+        const shippingId = req.params.id; // Obtener el ID del documento principal de la URL
+        const subdocumentId = req.params.subdocumentId; // Obtener el ID del subdocumento de la URL
+        const updatedShippings = await shippingServices.updateShippingsId(req.body, shippingId, subdocumentId);
+
+        if (updatedShippings) {
+            return res.status(updatedShippings.status).json(updatedShippings);
+        }
+    } catch (error) {
+        next(error);
+    }
+};
 // FIN PUT
 //*************************************************************************************************** */
 
@@ -104,6 +118,21 @@ export const DeleteOneShipping = async (req, res, next) => {
 //*************************************************************************************************** */
 // PATCH
 //Feak: 
-
+export const UpdatePatchOneShipping = async (req, res, next) => {
+    try {
+      const { IdInstitutoOK, IdNegocioOK, IdEntregaOK } = req.query; // Obtén el ID de la entrega desde los parámetros de la solicitud
+      const newData = req.body; // Obtén los nuevos datos desde el cuerpo de la solicitud
+  
+      const result = await shippingServices.UpdatePatchOneShipping(IdInstitutoOK, IdNegocioOK, IdEntregaOK ,newData);
+  
+      if (result.status === 200) {
+        return res.status(200).json(result);
+      } else if (result.status === 404) {
+        return res.status(404).json(result);
+      }
+    } catch (error) {
+      next(error);
+    }
+  };
 // FIN PATCH
 //*************************************************************************************************** */

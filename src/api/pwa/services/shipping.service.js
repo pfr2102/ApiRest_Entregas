@@ -256,6 +256,51 @@ export const updateShippingService = async (IdInstitutoOK, IdNegocioOK, IdEntreg
         // Haya o no error siempre ejecuta aquí
     }
 };
+
+export const updateShippingsId = async (updatedShipping, shippingId, subdocumentId) => {
+    let bitacora = BITACORA();
+    let data = DATA();
+
+    try {
+        bitacora.process = "Actualizar una Entrega";
+        data.method = "PUT";
+        data.api = `/shipping/${shippingId}/${subdocumentId}`;
+        data.process = "Actualizar una entrega en la colección de Entregas";
+
+        const result = await Shippings.findOneAndUpdate(
+            { IdEntregaOK: shippingId, 'info_ad.IdEtiquetaOK': subdocumentId },
+            { $set: { 'info_ad.$': updatedShipping } },
+            { new: true }
+        );
+
+        if (!result) {
+            data.status = 404;
+            data.messageDEV = "No se encontró el subdocumento para actualizar";
+            throw Error(data.messageDEV);
+        }
+
+        data.status = 200;
+        data.messageUSR = "La actualización de la Entrega fue exitosa";
+        data.dataRes = result;
+
+        bitacora = AddMSG(bitacora, data, 'OK', 200, true);
+
+        return OK(bitacora);
+
+    } catch (error) {
+        if (!data.status) data.status = error.statusCode || 500;
+        let { message } = error;
+        if (!data.messageDEV) data.messageDEV = message;
+        if (!data.dataRes) data.dataRes = error;
+        data.messageUSR = "La actualización de la Entrega fue exitosa";
+
+        bitacora = AddMSG(bitacora, data, 'FAIL');
+
+        return FAIL(bitacora);
+    } finally {
+        // Haya o no error siempre ejecuta aquí
+    }
+};
 //===========================================================FIN PUT===========================================================
 
 //===========================================================DELETE===========================================================
@@ -305,5 +350,55 @@ export const deleteShippingByValueService = async (IdInstitutoOK, IdNegocioOK, I
 //===========================================================FIN DELETE===========================================================
 
 //===========================================================PATCH================================================================
-
+export const UpdatePatchOneShipping = async (IdInstitutoOK, IdNegocioOK, IdEntregaOK,updateData) => {
+    let bitacora = BITACORA();
+    let data = DATA();
+  
+    try {
+      bitacora.process = 'Modificar un envío.';
+      data.process = 'Modificar un envío por unidad';
+      data.method = 'PATCH';
+      data.api = `/shipping`;
+  
+      const currentOrder = await Shippings.findOne({ IdEntregaOK: IdEntregaOK, IdInstitutoOK: IdInstitutoOK, IdNegocioOK: IdNegocioOK });
+  
+      if (!currentOrder) {
+        data.status = 404;
+        data.messageDEV = `No se encontró una orden con el ID ${IdEntregaOK}`;
+        throw new Error(data.messageDEV);
+      }
+  
+      for (const key in updateData) {
+        if (updateData.hasOwnProperty(key)) {
+          currentOrder[key] = updateData[key];
+        }
+      }
+  
+      // Guardar los cambios
+      const result = await currentOrder.save();
+  
+      // Devolver solo las propiedades actualizadas
+      data.dataRes = Object.keys(updateData).reduce((acc, key) => {
+        acc[key] = result[key];
+        return acc;
+      }, {});
+  
+      data.status = 200;
+      data.messageUSR = 'La Modificacion de los subdocumentos de producto SI fue exitoso.';
+      bitacora = AddMSG(bitacora, data, 'OK', 201, true);
+  
+      return OK(bitacora);
+    } catch (error) {
+      if (!data.status) data.status = error.statusCode || 500;
+      if (!data.messageDEV) data.messageDEV = error.message || 'Error desconocido';
+  
+      if (data.dataRes === undefined) data.dataRes = error;
+  
+      data.messageUSR = `La actualización del envío con ID ${IdEntregaOK} falló`;
+  
+      bitacora = AddMSG(bitacora, data, 'FAIL');
+  
+      return FAIL(bitacora);
+    }
+  };
 //===========================================================FIN PATCH============================================================
