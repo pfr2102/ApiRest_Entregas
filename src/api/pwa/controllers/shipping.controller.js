@@ -46,10 +46,17 @@ export const AddOneShipping = async(req, res, next) => {
 };
 
 //PARA POST DE ID E INSERTAR EN SUBDOCUMENTOS
-export const addShippingsId = async (req, res, next) => {
+export const addShippingsSub = async (req, res, next) => {
     try {
-        const shippingId = req.params.id; // Obtener el ID de la URL
-        const shippingsAdded = await shippingServices.addShippingsId(req.body, shippingId);
+        const queryParams = req.query; // Obtener los query parameters
+
+        // Incorporar query parameters a los datos de envío
+        const newShipping = {
+            ...req.body,
+            ...queryParams
+        };
+
+        const shippingsAdded = await shippingServices.addShippingsSub(newShipping, queryParams);
 
         if (shippingsAdded) {
             return res.status(shippingsAdded.status).json(shippingsAdded);
@@ -81,14 +88,17 @@ export const UpdateOneShipping = async (req, res, next) => {
     }
 };
 
-export const updateShippingsId = async (req, res, next) => {
+export const UpdateSubdocument = async (req, res, next) => {
     try {
-        const shippingId = req.params.id; // Obtener el ID del documento principal de la URL
-        const subdocumentId = req.params.subdocumentId; // Obtener el ID del subdocumento de la URL
-        const updatedShippings = await shippingServices.updateShippingsId(req.body, shippingId, subdocumentId);
+        const { IdInstitutoOK, IdNegocioOK, IdEntregaOK, IdEtiquetaOK } = req.query; // Obtén los valores de los query parameters
+        const newData = req.body; // Obtén los nuevos datos desde el cuerpo de la solicitud
 
-        if (updatedShippings) {
-            return res.status(updatedShippings.status).json(updatedShippings);
+        const result = await shippingServices.updateSubdocumentService(IdInstitutoOK, IdNegocioOK, IdEntregaOK, IdEtiquetaOK, newData);
+
+        if (result.status === 200) {
+            return res.status(200).json(result);
+        } else if (result.status === 404) {
+            return res.status(404).json(result);
         }
     } catch (error) {
         next(error);
@@ -106,6 +116,19 @@ export const DeleteOneShipping = async (req, res, next) => {
 
         // Llama al servicio de eliminación y pasa los valores a eliminar
         const result = await shippingServices.deleteShippingByValueService(IdInstitutoOK, IdNegocioOK, IdEntregaOK);
+
+        return res.status(result.status).json(result);
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const DeleteSubdocument = async (req, res, next) => {
+    try {
+        const { IdInstitutoOK, IdNegocioOK, IdEntregaOK, IdEtiquetaOK } = req.query; // Obtén los valores de los query parameters
+
+        // Llama al servicio de eliminación y pasa los valores a eliminar
+        const result = await shippingServices.DeleteInfoAdSub(IdInstitutoOK, IdNegocioOK, IdEntregaOK, IdEtiquetaOK);
 
         return res.status(result.status).json(result);
     } catch (error) {

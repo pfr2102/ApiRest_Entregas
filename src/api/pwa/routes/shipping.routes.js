@@ -12,9 +12,10 @@ router.patch('/', shippingsController.UpdatePatchOneShipping);
 
 
 //RUTAS PARA SUBDOCUMENTOS
-router.post('/:id', shippingsController.addShippingsId); //Para hacer un post con id para los subdocumentos (el id se requiere para)
+router.post('/subdocument', shippingsController.addShippingsSub); //Para hacer un post con id para los subdocumentos (el id se requiere para)
                                                          //en que documento vas a colocar el nuevo subdocumento
-router.put('/:id/:subdocumentId', shippingsController.updateShippingsId);
+router.put('/subdocument', shippingsController.UpdateSubdocument);
+router.delete('/subdocument', shippingsController.DeleteSubdocument);
 
 
 export default router;  
