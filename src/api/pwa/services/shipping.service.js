@@ -110,6 +110,59 @@ export const getShippingByIdService = async (id, IdInstitutoOK, IdNegocioOK) => 
         // Aqui se ejecuta independientemente de si se produce un error o no
     }
 };
+
+export const getSubdocumentById = async (IdInstitutoOK, IdNegocioOK, IdEntregaOK, subdocument) => {
+    let bitacora = BITACORA();
+    let data = DATA();
+  
+    try {
+      bitacora.process = `Extraer subdocumento ${subdocument} del documento con customId ${IdEntregaOK}`;
+      data.method = "GET";
+      data.api = `/shipping/subdocument`;
+      data.process = `Extraer subdocumento ${subdocument} de la colección de Entregas`;
+  
+      const shipping = await Shippings.findOne({ 
+        IdInstitutoOK: IdInstitutoOK, 
+        IdNegocioOK: IdNegocioOK, 
+        IdEntregaOK: IdEntregaOK 
+      });
+  
+      if (!shipping) {
+        data.status = 404;
+        data.messageDEV = `El documento con ID ${IdEntregaOK} no fue encontrado`;
+        throw Error(data.messageDEV);
+      }
+  
+      const subdoc = shipping[subdocument];
+  
+      if (!subdoc) {
+        data.status = 404;
+        data.messageDEV = `El subdocumento ${subdocument} no fue encontrado en el documento con customId ${IdEntregaOK}`;
+        throw Error(data.messageDEV);
+      }
+  
+      data.status = 200;
+      data.messageUSR = `La extracción del subdocumento ${subdocument} tuvo éxito`;
+      data.dataRes = subdoc;
+  
+      bitacora = AddMSG(bitacora, data, 'OK', 200, true);
+  
+      return OK(bitacora);
+  
+    } catch (error) {
+      if (!data.status) data.status = error.statusCode;
+      let { message } = error;
+      if (!data.messageDEV) data.messageDEV = message;
+      if (!data.dataRes.length === 0) data.dataRes = error;
+      data.messageUSR = `La extracción del subdocumento ${subdocument} no tuvo éxito`;
+  
+      bitacora = AddMSG(bitacora, data, 'FAIL');
+  
+      return FAIL(bitacora);
+    } finally {
+      // Haya o no error siempre ejecuta aquí
+    }
+  };
 //===========================================================FING GET===========================================================
 
 
@@ -404,55 +457,73 @@ export const DeleteInfoAdSub = async (IdInstitutoOK, IdNegocioOK, IdEntregaOK, I
 //===========================================================FIN DELETE===========================================================
 
 //===========================================================PATCH================================================================
-export const UpdatePatchOneShipping = async (IdInstitutoOK, IdNegocioOK, IdEntregaOK,updateData) => {
+export const updateShipping = async (IdInstitutoOK, IdNegocioOK, IdEntregaOK, updateData) => {
     let bitacora = BITACORA();
+    let response = updateShippingMethod(bitacora,IdInstitutoOK, IdNegocioOK, IdEntregaOK,updateData);
+    return response;
+  };
+  
+  export const updateShippingMethod = async (bitacora, IdInstitutoOK, IdNegocioOK, IdEntregaOK, updateData) => {
     let data = DATA();
-  
     try {
-      bitacora.process = 'Modificar un envío.';
-      data.process = 'Modificar un envío por unidad';
+      bitacora.process = 'Modificar una entrega.';
+      data.process = 'Modificar una entrega';
       data.method = 'PATCH';
-      data.api = `/shipping`;
+      data.api = '/shipping';
   
-      const currentOrder = await Shippings.findOne({ IdEntregaOK: IdEntregaOK, IdInstitutoOK: IdInstitutoOK, IdNegocioOK: IdNegocioOK });
+      let shippingUpdated = null;
   
-      if (!currentOrder) {
-        data.status = 404;
-        data.messageDEV = `No se encontró una orden con el ID ${IdEntregaOK}`;
-        throw new Error(data.messageDEV);
-      }
+      // Encuentra el documento principal usando IdInstitutoOK, IdNegocioOK e IdEntregaOK
+      const filter = {
+        IdInstitutoOK: IdInstitutoOK,
+        IdNegocioOK: IdNegocioOK,
+        IdEntregaOK: IdEntregaOK
+      };
   
       for (const key in updateData) {
         if (updateData.hasOwnProperty(key)) {
-          currentOrder[key] = updateData[key];
+          const value = updateData[key];
+  
+          const updateQuery = { $set: { [key]: value } };
+  
+          try {
+            shippingUpdated = await Shippings.findOneAndUpdate(
+              filter,
+              updateQuery,
+              { new: true }
+            );
+  
+            if (!shippingUpdated) {
+              console.error("No se encontró un documento para actualizar con ese ID,", IdEntregaOK);
+              data.status = 400;
+              data.messageDEV = 'La actualización de un subdocumento de entregas NO fue exitoso.';
+              throw new Error(data.messageDEV);
+            }
+          } catch (error) {
+            console.error(error);
+            data.status = 400;
+            data.messageDEV = 'La actualizacion de un subdocumento de entregas NO fue exitoso.';
+            throw Error(data.messageDEV);
+          }
         }
       }
   
-      // Guardar los cambios
-      const result = await currentOrder.save();
-  
-      // Devolver solo las propiedades actualizadas
-      data.dataRes = Object.keys(updateData).reduce((acc, key) => {
-        acc[key] = result[key];
-        return acc;
-      }, {});
-  
-      data.status = 200;
-      data.messageUSR = 'La Modificacion de los subdocumentos de producto SI fue exitoso.';
+      data.messageUSR = 'La modificacion de los subdocumentos de entregas SI fue exitoso.';
+      data.dataRes = shippingUpdated;
       bitacora = AddMSG(bitacora, data, 'OK', 201, true);
-  
       return OK(bitacora);
     } catch (error) {
-      if (!data.status) data.status = error.statusCode || 500;
-      if (!data.messageDEV) data.messageDEV = error.message || 'Error desconocido';
-  
-      if (data.dataRes === undefined) data.dataRes = error;
-  
-      data.messageUSR = `La actualización del envío con ID ${IdEntregaOK} falló`;
-  
+      console.error(error);
+      if (!data.status) data.status = error.statusCode;
+      let { message } = error;
+      if (!data.messageDEV) data.messageDEV = message;
+      if (data.dataRes.length === 0) data.dataRes = error;
+      data.messageUSR =
+        'La Modificacionión de entregas NO fue exitoso.' +
+        '\n' +
+        'Any operations that already occurred as part of this transaction will be rolled back.';
       bitacora = AddMSG(bitacora, data, 'FAIL');
-  
       return FAIL(bitacora);
     }
-  };
+};
 //===========================================================FIN PATCH============================================================

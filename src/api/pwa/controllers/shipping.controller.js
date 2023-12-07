@@ -28,6 +28,20 @@ export const GetOneShipping = async (req, res, next) => {
         next(error);
     }
 };
+
+export const GetOneSubdoc = async (req, res, next) => {
+    try {
+      const { IdInstitutoOK, IdNegocioOK, IdEntregaOK, subdocument } = req.query;
+  
+      const result = await shippingServices.getSubdocumentById(IdInstitutoOK, IdNegocioOK, IdEntregaOK, subdocument);
+  
+      if (result) {
+        return res.status(result.status).json(result);
+      }
+    } catch (error) {
+      next(error);
+    }
+  };
 // FIN GET
 //*************************************************************************************************** */
 //*************************************************************************************************** */
@@ -143,19 +157,17 @@ export const DeleteSubdocument = async (req, res, next) => {
 //Feak: 
 export const UpdatePatchOneShipping = async (req, res, next) => {
     try {
-      const { IdInstitutoOK, IdNegocioOK, IdEntregaOK } = req.query; // Obtén el ID de la entrega desde los parámetros de la solicitud
-      const newData = req.body; // Obtén los nuevos datos desde el cuerpo de la solicitud
-  
-      const result = await shippingServices.UpdatePatchOneShipping(IdInstitutoOK, IdNegocioOK, IdEntregaOK ,newData);
-  
-      if (result.status === 200) {
-        return res.status(200).json(result);
-      } else if (result.status === 404) {
-        return res.status(404).json(result);
-      }
+        const { IdInstitutoOK, IdNegocioOK, IdEntregaOK} = req.query;
+        console.log(req.body);
+        const updateData = req.body;
+        const shippingUpdate = await shippingServices.updateShipping(IdInstitutoOK, IdNegocioOK, IdEntregaOK, updateData);
+        if (shippingUpdate) {
+            shippingUpdate.session = null;
+            return res.status(shippingUpdate.status).json(shippingUpdate);
+        }
     } catch (error) {
-      next(error);
+        next(error);
     }
-  };
+};
 // FIN PATCH
 //*************************************************************************************************** */

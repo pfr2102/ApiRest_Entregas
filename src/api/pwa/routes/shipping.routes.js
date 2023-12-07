@@ -8,10 +8,11 @@ router.get('/one', shippingsController.GetOneShipping);
 router.post('/', shippingsController.AddOneShipping);
 router.put('/', shippingsController.UpdateOneShipping);
 router.delete('/', shippingsController.DeleteOneShipping);
-router.patch('/', shippingsController.UpdatePatchOneShipping);
+router.patch('/one', shippingsController.UpdatePatchOneShipping);
 
 
 //RUTAS PARA SUBDOCUMENTOS
+router.get('/subdocument', shippingsController.GetOneSubdoc);
 router.post('/subdocument', shippingsController.addShippingsSub); //Para hacer un post con id para los subdocumentos (el id se requiere para)
                                                          //en que documento vas a colocar el nuevo subdocumento
 router.put('/subdocument', shippingsController.UpdateSubdocument);
