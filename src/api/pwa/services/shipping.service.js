@@ -567,3 +567,154 @@ export const DeleteInfoAdSub = async (IdInstitutoOK, IdNegocioOK, IdEntregaOK, I
 };
 //=============================================FIN PARA SUBDOC INFO_AD=============================================
 
+//=============================================PARA SUBDOC ENVIOS=============================================
+//POST
+//POST CON ID PARA INSERTAR EN SUBDOCUMENTOS
+export const addShippingsSubEnvios = async (newShipping, queryParams) => {
+    let bitacora = BITACORA();
+    let data = DATA();
+
+    try {
+        bitacora.process = "Agregar un nuevo envío";
+        data.method = "POST";
+        data.api = `/shipping/subdocumentE${queryParams}`;
+        data.process = "Agregar un nuevo envío a la colección de Entregas";
+
+        const result = await Shippings.updateOne(
+            // Usar los tres IDs como condiciones de búsqueda
+            { 
+                IdEntregaOK: queryParams.IdEntregaOK,
+                IdInstitutoOK: queryParams.IdInstitutoOK,
+                IdNegocioOK: queryParams.IdNegocioOK
+            }, 
+            // Pasar el array (subdocumento) que es parte del documento principal
+            { $push: { envios: newShipping } }
+        );
+
+        if (result.nModified === 0) {
+            data.status = 400;
+            data.messageDEV = "La inserción del envío <<NO>> fue exitosa";
+            throw Error(data.messageDEV);
+        }
+
+        data.status = 201;
+        data.messageUSR = "La inserción del envío <<SI>> fue exitosa";
+        data.dataRes = result;
+
+        bitacora = AddMSG(bitacora, data, 'OK', 201, true);
+
+        return OK(bitacora);
+
+    } catch (error) {
+        if (!data.status) data.status = error.statusCode;
+        let { message } = error;
+        if (!data.messageDEV) data.messageDEV = message;
+        if (!data.dataRes.length === 0) data.dataRes = error;
+        data.messageUSR = "La inserción del envío <<NO>> fue exitosa";
+
+        bitacora = AddMSG(bitacora, data, 'FAIL');
+
+        return FAIL(bitacora);
+    } finally {
+        // Haya o no error siempre ejecuta aquí
+    }
+};
+
+//PUT
+export const updateSubdocumentServiceEnvios = async (IdInstitutoOK, IdNegocioOK, IdEntregaOK, IdDomicilioOK, newData) => {
+    let bitacora = BITACORA();
+    let data = DATA();
+
+    try {
+        bitacora.process = `Actualizar el envío con ID ${IdDomicilioOK}`;
+        data.method = "PUT";
+        data.api = `/shipping`;
+        data.process = "Actualizar envío en el subdocumento envío de Entregas";
+
+        // Actualización de la entrega
+        const updatedShipping = await Shippings.findOneAndUpdate(
+            { IdEntregaOK: IdEntregaOK, 'envios.IdDomicilioOK': IdDomicilioOK, IdNegocioOK: IdNegocioOK, IdInstitutoOK: IdInstitutoOK },
+            { $set: { 'envios.$': newData } },
+            { new: true }
+        );
+
+        if (!updatedShipping) {
+            data.status = 404;
+            data.messageDEV = `No se encontró un envío con el ID ${IdDomicilioOK}`;
+            throw Error(data.messageDEV);
+        }
+
+        data.status = 200;
+        data.messageUSR = `El envío con ID ${IdDomicilioOK} se actualizó con éxito`;
+        data.dataRes = updatedShipping;
+
+        bitacora = AddMSG(bitacora, data, 'OK', 200, true);
+
+        return OK(bitacora);
+    } catch (error) {
+        if (!data.status) data.status = error.statusCode;
+        let { message } = error;
+        if (!data.messageDEV) data.messageDEV = message;
+        if (!data.dataRes.length === 0) data.dataRes = error;
+        data.messageUSR = `La actualización del envío con ID ${IdDomicilioOK} falló`;
+
+        bitacora = AddMSG(bitacora, data, 'FAIL');
+
+        return FAIL(bitacora);
+    } finally {
+        // Haya o no error siempre ejecuta aquí
+    }
+};
+
+//DELETE
+export const DeleteInfoAdSubEnvios = async (IdInstitutoOK, IdNegocioOK, IdEntregaOK, IdDomicilioOK) => {
+    let bitacora = BITACORA();
+    let data = DATA();
+
+    try {
+        bitacora.process = `Eliminar el envío con Valores: ${IdInstitutoOK}, ${IdNegocioOK}, ${IdEntregaOK}, ${IdDomicilioOK}`;
+        data.method = "DELETE";
+        data.api = `/shipping`;
+        data.process = "Eliminar el subdocumento envío en la colección de Entregas";
+
+        // Utiliza $pull para eliminar el subdocumento en el array
+        const result = await Shippings.updateOne(
+            {
+                IdInstitutoOK: IdInstitutoOK,
+                IdNegocioOK: IdNegocioOK,
+                IdEntregaOK: IdEntregaOK,
+            },
+            {
+                $pull: {
+                    envios: { IdDomicilioOK: IdDomicilioOK },
+                },
+            }
+        );
+
+        if (result.deletedCount === 0) {
+            data.status = 404;
+            data.messageDEV = `No se encontró un envío con los valores proporcionados`;
+            throw Error(data.messageDEV);
+        }
+
+        data.status = 200;
+        data.messageUSR = "Envío eliminada correctamente";
+
+        bitacora = AddMSG(bitacora, data, 'OK', 200, true);
+
+        return OK(bitacora);
+    } catch (error) {
+        if (!data.status) data.status = error.statusCode;
+        let { message } = error;
+        if (!data.messageDEV) data.messageDEV = message;
+        if (!data.dataRes.length === 0) data.dataRes = error;
+        data.messageUSR = "La eliminación del envío falló";
+
+        bitacora = AddMSG(bitacora, data, 'FAIL');
+
+        return FAIL(bitacora);
+    } finally {
+        // Haya o no error siempre ejecuta aquí
+    }
+};
+//=============================================FIN PARA SUBDOC ENVIOS=============================================

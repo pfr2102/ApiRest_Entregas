@@ -19,6 +19,11 @@ router.post('/subdocument', shippingsController.addShippingsSub); //Para hacer u
 router.put('/subdocument', shippingsController.UpdateSubdocument);
 router.delete('/subdocument', shippingsController.DeleteSubdocument);
 
+//RUTAS PARA SUBDOCUMENTO ENVIOS
+router.post('/subdocumentE', shippingsController.addShippingsSubEnvios);
+router.put('/subdocumentE', shippingsController.UpdateSubdocumentEnvios);
+router.delete('/subdocumentE', shippingsController.DeleteSubdocumentEnvios);
+
 
 
 export default router;  
