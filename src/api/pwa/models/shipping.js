@@ -94,24 +94,26 @@ const shippingsSchemaPWA = new mongoose.Schema({
                     }
                 }
             ],
-            rastreos: {
-                _id: false,
-                NumeroGuia: { type: String },
-                IdRepartidorOK: { type: String },
-                NombreRepartidor: { type: String },
-                Alias: { type: String },
-                seguimiento: [
+            rastreos: [
                     {
-                        _id: false,
-                        Ubicacion: { type: String },
-                        DesUbicacion: { type: String },
-                        Referencias: { type: String },
-                        Observacion: { type: String },
-                        FechaReg: {type : Date, default: Date.now},
-                        UsuarioReg: { type: String },
-                    }
-                ]
-            }
+                    _id: false,
+                    NumeroGuia: { type: String },
+                    IdRepartidorOK: { type: String },
+                    NombreRepartidor: { type: String },
+                    Alias: { type: String },
+                    seguimiento: [
+                        {
+                            _id: false,
+                            Ubicacion: { type: String },
+                            DesUbicacion: { type: String },
+                            Referencias: { type: String },
+                            Observacion: { type: String },
+                            FechaReg: {type : Date, default: Date.now},
+                            UsuarioReg: { type: String },
+                        }
+                    ]
+                }
+            ]
         }
     ],
     detail_row: {

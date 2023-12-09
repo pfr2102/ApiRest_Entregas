@@ -139,6 +139,27 @@ export const GetOneSubdoc = async (req, res, next) => {
     }
 };
 
+//PARA HACER UN GET A UNO DE LOS OBJETOS DEL ARREGLO DE ENVIOS MEDIANTE EL IdDomicilioOK
+export const GetOneShippingEnvio = async (req, res, next) => {
+    try {
+      const { IdInstitutoOK, IdNegocioOK, IdEntregaOK, IdDomicilioOK } = req.query;
+      const shippingData = await shippingServices.getShippingMethod(
+        IdInstitutoOK,
+        IdNegocioOK,
+        IdEntregaOK,
+        IdDomicilioOK
+      );
+  
+      if (shippingData) {
+        shippingData.session = null;
+        return res.status(shippingData.status).json(shippingData);
+      }
+    } catch (error) {
+      next(error);
+    }
+};
+
+
 //=============================================PARA SUBDOC INFO_AD=============================================
 //POST
 export const addShippingsSub = async (req, res, next) => {
@@ -248,3 +269,73 @@ export const DeleteSubdocumentEnvios = async (req, res, next) => {
     }
 };
 //=============================================FIN PARA SUBDOC ENVIOS=============================================
+
+//=============================================PARA SUBDOC INFO_AD DE SUBDOC ENVIOS=============================================
+export const addShippingsSubEnviosInf = async (req, res, next) => {
+    try {
+        const queryParams = req.query; // Obtener los query parameters
+
+        // Incorporar query parameters a los datos de envío
+        const newInfoAd = {
+            ...req.body,
+            ...queryParams
+        };
+
+        const shippingsAdded = await shippingServices.addShippingsSubEnviosInf(newInfoAd, queryParams);
+
+        if (shippingsAdded) {
+            return res.status(shippingsAdded.status).json(shippingsAdded);
+        }
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const UpdateSubdocumentEnviosInf = async (req, res, next) => {
+    try {
+        const queryParams = req.query; // Obtener los query parameters
+
+        // Incorporar query parameters a los datos de envío
+        const updatedInfoAd = {
+            ...req.body,
+            ...queryParams
+        };
+
+        const shippingsUpdated = await shippingServices.updateShippingsSubEnviosInf(updatedInfoAd, queryParams);
+
+        if (shippingsUpdated) {
+            return res.status(shippingsUpdated.status).json(shippingsUpdated);
+        }
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const DeleteSubdocumentEnviosInf = async (req, res, next) => {
+    try {
+        const queryParams = req.query; // Obtener los query parameters
+
+        const shippingsDeleted = await shippingServices.deleteShippingsSubEnviosInf(queryParams);
+
+        if (shippingsDeleted) {
+            return res.status(shippingsDeleted.status).json(shippingsDeleted);
+        }
+    } catch (error) {
+        next(error);
+    }
+};
+//=============================================FIN PARA SUBDOC INFO_AD DE SUBDOC ENVIOS=============================================
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
