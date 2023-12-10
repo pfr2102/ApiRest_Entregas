@@ -94,8 +94,7 @@ const shippingsSchemaPWA = new mongoose.Schema({
                     }
                 }
             ],
-            rastreos: [
-                    {
+            rastreos: {
                     _id: false,
                     NumeroGuia: { type: String },
                     IdRepartidorOK: { type: String },
@@ -113,7 +112,6 @@ const shippingsSchemaPWA = new mongoose.Schema({
                         }
                     ]
                 }
-            ]
         }
     ],
     detail_row: {

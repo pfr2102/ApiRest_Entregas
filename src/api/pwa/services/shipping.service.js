@@ -956,3 +956,454 @@ export const deleteShippingsSubEnviosInf = async (queryParams) => {
     }
 };
 //=============================================FIN PARA SUBDOC INFO_AD DE SUBDOC ENVIOS=============================================
+
+//=============================================PARA SUBDOC PRODUCTOS DE SUBDOC ENVIOS=============================================
+export const addShippingsSubEnviosPr = async (newInfoAd, queryParams) => {
+    let bitacora = BITACORA();
+    let data = DATA();
+
+    try {
+        bitacora.process = "Agregar un nuevo producto a envío";
+        data.method = "POST";
+        data.api = `/shipping/subdocumentEPr${queryParams}`;
+        data.process = "Agregar un nuevo producto a la colección de Entregas";
+
+        const result = await Shippings.updateOne(
+            // Usar los tres IDs como condiciones de búsqueda
+            { 
+                IdEntregaOK: queryParams.IdEntregaOK,
+                IdInstitutoOK: queryParams.IdInstitutoOK,
+                IdNegocioOK: queryParams.IdNegocioOK,
+                // Agregar condición para encontrar el envío específico dentro del subdocumento envios
+                "envios.IdDomicilioOK": queryParams.IdDomicilioOK
+            }, 
+            // Pasar el array (subdocumento) que es parte del documento principal
+            { $push: { "envios.$.productos": newInfoAd } }
+        );
+
+        if (result.nModified === 0) {
+            data.status = 400;
+            data.messageDEV = "La inserción de productos <<NO>> fue exitosa";
+            throw Error(data.messageDEV);
+        }
+
+        data.status = 201;
+        data.messageUSR = "La inserción de productos <<SI>> fue exitosa";
+        data.dataRes = result;
+
+        bitacora = AddMSG(bitacora, data, 'OK', 201, true);
+
+        return OK(bitacora);
+
+    } catch (error) {
+        if (!data.status) data.status = error.statusCode;
+        let { message } = error;
+        if (!data.messageDEV) data.messageDEV = message;
+        if (!data.dataRes.length === 0) data.dataRes = error;
+        data.messageUSR = "La inserción de productos <<NO>> fue exitosa";
+
+        bitacora = AddMSG(bitacora, data, 'FAIL');
+
+        return FAIL(bitacora);
+    } finally {
+        // Haya o no error siempre ejecuta aquí
+    }
+};
+
+export const updateShippingsSubEnviosPr = async (updatedInfoAd, queryParams) => {
+    let bitacora = BITACORA();
+    let data = DATA();
+
+    try {
+        bitacora.process = "Actualizar producto en envío";
+        data.method = "PUT";
+        data.api = `/shipping/subdocumentEPr${queryParams}`;
+        data.process = "Actualizar producto en la colección de Entregas";
+
+        const result = await Shippings.updateOne(
+            { 
+                IdEntregaOK: queryParams.IdEntregaOK,
+                IdInstitutoOK: queryParams.IdInstitutoOK,
+                IdNegocioOK: queryParams.IdNegocioOK,
+                "envios.IdDomicilioOK": queryParams.IdDomicilioOK,
+                // Agregar condición para encontrar la info_ad específica por IdEtiquetaOK
+                "envios.productos.IdPresentaOK": updatedInfoAd.IdPresentaOK
+            }, 
+            // Actualizar el subdocumento info_ad con los nuevos datos
+            //originalmente esta parte del set era envios.$.info_ad.$ pero se agrego lo de outer e inner porque eran muchos
+            //marcadores de posicion ($) y marcaba error. Eso pasa cuando se intenta acceder a un subdoc dentro de un array
+            //dentro de otro array, por lo cual se usa outer que es el IdDomicilio de envios e inner que es el IdEtiqueta de info_ad
+            { $set: { "envios.$[outer].productos.$[inner]": updatedInfoAd } },
+            // Configuración de la opción de arrayFilters para identificar los elementos específicos en los arrays
+            {
+                arrayFilters: [
+                    { "outer.IdDomicilioOK": queryParams.IdDomicilioOK },
+                    { "inner.IdPresentaOK": updatedInfoAd.IdPresentaOK }
+                ]
+            }
+        );
+
+        if (result.nModified === 0) {
+            data.status = 400;
+            data.messageDEV = "La actualización de producto <<NO>> fue exitosa";
+            throw Error(data.messageDEV);
+        }
+
+        data.status = 200;
+        data.messageUSR = "La actualización de producto <<SI>> fue exitosa";
+        data.dataRes = result;
+
+        bitacora = AddMSG(bitacora, data, 'OK', 200, true);
+
+        return OK(bitacora);
+
+    } catch (error) {
+        if (!data.status) data.status = error.statusCode;
+        let { message } = error;
+        if (!data.messageDEV) data.messageDEV = message;
+        if (!data.dataRes.length === 0) data.dataRes = error;
+        data.messageUSR = "La actualización de producto <<NO>> fue exitosa";
+
+        bitacora = AddMSG(bitacora, data, 'FAIL');
+
+        return FAIL(bitacora);
+    } finally {
+        // Haya o no error siempre ejecuta aquí
+    }
+};
+
+export const deleteShippingsSubEnviosPr = async (queryParams) => {
+    let bitacora = BITACORA();
+    let data = DATA();
+
+    try {
+        bitacora.process = "Eliminar producto en envío";
+        data.method = "DELETE";
+        data.api = `/shipping/subdocumentEPr${queryParams}`;
+        data.process = "Eliminar producto en la colección de Entregas";
+
+        const result = await Shippings.updateOne(
+            { 
+                IdEntregaOK: queryParams.IdEntregaOK,
+                IdInstitutoOK: queryParams.IdInstitutoOK,
+                IdNegocioOK: queryParams.IdNegocioOK,
+                "envios.IdDomicilioOK": queryParams.IdDomicilioOK,
+                "envios.productos.IdPresentaOK": queryParams.IdPresentaOK
+            }, 
+            // Eliminar el subdocumento productos específico
+            { $pull: { "envios.$.productos": { IdPresentaOK: queryParams.IdPresentaOK } } }
+        );
+
+        if (result.nModified === 0) {
+            data.status = 400;
+            data.messageDEV = "La eliminación del producto <<NO>> fue exitosa";
+            throw Error(data.messageDEV);
+        }
+
+        data.status = 200;
+        data.messageUSR = "La eliminación del producto <<SI>> fue exitosa";
+        data.dataRes = result;
+
+        bitacora = AddMSG(bitacora, data, 'OK', 200, true);
+
+        return OK(bitacora);
+
+    } catch (error) {
+        if (!data.status) data.status = error.statusCode;
+        let { message } = error;
+        if (!data.messageDEV) data.messageDEV = message;
+        if (!data.dataRes.length === 0) data.dataRes = error;
+        data.messageUSR = "La eliminación del producto <<NO>> fue exitosa";
+
+        bitacora = AddMSG(bitacora, data, 'FAIL');
+
+        return FAIL(bitacora);
+    } finally {
+        // Haya o no error siempre ejecuta aquí
+    }
+};
+//=============================================FIN PARA SUBDOC PRODUCTOS DE SUBDOC ENVIOS=============================================
+
+//=============================================PARA SUBDOC ESTATUS DE SUBDOC ENVIOS=============================================
+export const addShippingsSubEnviosSt = async (newInfoAd, queryParams) => {
+    let bitacora = BITACORA();
+    let data = DATA();
+
+    try {
+        bitacora.process = "Agregar un nuevo estatus a envío";
+        data.method = "POST";
+        data.api = `/shipping/subdocumentESt${queryParams}`;
+        data.process = "Agregar un nuevo estatus a la colección de Entregas";
+
+        const result = await Shippings.updateOne(
+            // Usar los tres IDs como condiciones de búsqueda
+            { 
+                IdEntregaOK: queryParams.IdEntregaOK,
+                IdInstitutoOK: queryParams.IdInstitutoOK,
+                IdNegocioOK: queryParams.IdNegocioOK,
+                // Agregar condición para encontrar el envío específico dentro del subdocumento envios
+                "envios.IdDomicilioOK": queryParams.IdDomicilioOK
+            }, 
+            // Pasar el array (subdocumento) que es parte del documento principal
+            { $push: { "envios.$.estatus": newInfoAd } }
+        );
+
+        if (result.nModified === 0) {
+            data.status = 400;
+            data.messageDEV = "La inserción de estatus <<NO>> fue exitosa";
+            throw Error(data.messageDEV);
+        }
+
+        data.status = 201;
+        data.messageUSR = "La inserción de estatus <<SI>> fue exitosa";
+        data.dataRes = result;
+
+        bitacora = AddMSG(bitacora, data, 'OK', 201, true);
+
+        return OK(bitacora);
+
+    } catch (error) {
+        if (!data.status) data.status = error.statusCode;
+        let { message } = error;
+        if (!data.messageDEV) data.messageDEV = message;
+        if (!data.dataRes.length === 0) data.dataRes = error;
+        data.messageUSR = "La inserción de estatus <<NO>> fue exitosa";
+
+        bitacora = AddMSG(bitacora, data, 'FAIL');
+
+        return FAIL(bitacora);
+    } finally {
+        // Haya o no error siempre ejecuta aquí
+    }
+};
+
+
+//=============================================PARA SUBDOC RASTREOS DE SUBDOC ENVIOS=============================================
+export const addShippingsSubEnviosRa = async (newInfoAd, queryParams) => {
+    let bitacora = BITACORA();
+    let data = DATA();
+
+    try {
+        bitacora.process = "Agregar un nuevo rastreo a envío";
+        data.method = "POST";
+        data.api = `/shipping/subdocumentERa${queryParams}`;
+        data.process = "Agregar un nuevo rastreo a la colección de Entregas";
+
+        const result = await Shippings.updateOne(
+            // Usar los tres IDs como condiciones de búsqueda
+            { 
+                IdEntregaOK: queryParams.IdEntregaOK,
+                IdInstitutoOK: queryParams.IdInstitutoOK,
+                IdNegocioOK: queryParams.IdNegocioOK,
+                // Agregar condición para encontrar el envío específico dentro del subdocumento envios
+                "envios.IdDomicilioOK": queryParams.IdDomicilioOK
+            }, 
+            // Pasar el array (subdocumento) que es parte del documento principal
+            { $set: { "envios.$.rastreos": newInfoAd } }
+        );
+
+        if (result.nModified === 0) {
+            data.status = 400;
+            data.messageDEV = "La inserción de estatus <<NO>> fue exitosa";
+            throw Error(data.messageDEV);
+        }
+
+        data.status = 201;
+        data.messageUSR = "La inserción de estatus <<SI>> fue exitosa";
+        data.dataRes = result;
+
+        bitacora = AddMSG(bitacora, data, 'OK', 201, true);
+
+        return OK(bitacora);
+
+    } catch (error) {
+        if (!data.status) data.status = error.statusCode;
+        let { message } = error;
+        if (!data.messageDEV) data.messageDEV = message;
+        if (!data.dataRes.length === 0) data.dataRes = error;
+        data.messageUSR = "La inserción de estatus <<NO>> fue exitosa";
+
+        bitacora = AddMSG(bitacora, data, 'FAIL');
+
+        return FAIL(bitacora);
+    } finally {
+        // Haya o no error siempre ejecuta aquí
+    }
+};
+
+//=============================================PARA SUBDOC SEGUIMIENTO DE SUBDOC ENVIOS=============================================
+export const addShippingsSubEnviosSe = async (newInfoAd, queryParams) => {
+    let bitacora = BITACORA();
+    let data = DATA();
+
+    try {
+        bitacora.process = "Agregar un nuevo estatus a envío";
+        data.method = "POST";
+        data.api = `/shipping/subdocumentESt${queryParams}`;
+        data.process = "Agregar un nuevo estatus a la colección de Entregas";
+
+        const result = await Shippings.updateOne(
+            // Use the three IDs as search conditions
+            { 
+                IdEntregaOK: queryParams.IdEntregaOK,
+                IdInstitutoOK: queryParams.IdInstitutoOK,
+                IdNegocioOK: queryParams.IdNegocioOK,
+                // Add condition to find the specific shipment within the subdocument envios
+                "envios.IdDomicilioOK": queryParams.IdDomicilioOK
+            }, 
+            // Use the $push operator to add the new status to the seguimiento array
+            { $push: { "envios.$.rastreos.seguimiento": newInfoAd } }
+        );
+
+        if (result.nModified === 0) {
+            data.status = 400;
+            data.messageDEV = "La inserción de estatus <<NO>> fue exitosa";
+            throw Error(data.messageDEV);
+        }
+
+        data.status = 201;
+        data.messageUSR = "La inserción de estatus <<SI>> fue exitosa";
+        data.dataRes = result;
+
+        bitacora = AddMSG(bitacora, data, 'OK', 201, true);
+
+        return OK(bitacora);
+
+    } catch (error) {
+        if (!data.status) data.status = error.statusCode;
+        let { message } = error;
+        if (!data.messageDEV) data.messageDEV = message;
+        if (!data.dataRes.length === 0) data.dataRes = error;
+        data.messageUSR = "La inserción de estatus <<NO>> fue exitosa";
+
+        bitacora = AddMSG(bitacora, data, 'FAIL');
+
+        return FAIL(bitacora);
+    } finally {
+        // Whether there is an error or not, this block always executes
+    }
+};
+
+export const updateShippingsSubEnviosSe = async (updatedInfoAd, queryParams) => {
+    let bitacora = BITACORA();
+    let data = DATA();
+
+    try {
+        bitacora.process = "Actualizar producto en envío";
+        data.method = "PUT";
+        data.api = `/shipping/subdocumentEPr${queryParams}`;
+        data.process = "Actualizar producto en la colección de Entregas";
+
+        const result = await Shippings.updateOne(
+            {
+                IdEntregaOK: queryParams.IdEntregaOK,
+                IdInstitutoOK: queryParams.IdInstitutoOK,
+                IdNegocioOK: queryParams.IdNegocioOK,
+                "envios.IdDomicilioOK": queryParams.IdDomicilioOK,
+                "envios.rastreos.seguimiento.Ubicacion": updatedInfoAd.Ubicacion
+            },
+            // Actualizar el subdocumento info_ad con los nuevos datos
+            {
+                $set: {
+                    "envios.$[outer].rastreos.seguimiento.$[inner]": updatedInfoAd
+                }
+            },
+            // Configuración de la opción de arrayFilters para identificar los elementos específicos en los arrays
+            {
+                arrayFilters: [
+                    { "outer.IdDomicilioOK": queryParams.IdDomicilioOK },
+                    { "inner.Ubicacion": updatedInfoAd.Ubicacion }
+                ]
+            }
+        );
+
+        if (result.nModified === 0) {
+            data.status = 400;
+            data.messageDEV = "La actualización de producto no fue exitosa";
+            throw Error(data.messageDEV);
+        }
+
+        data.status = 200;
+        data.messageUSR = "La actualización de producto fue exitosa";
+        data.dataRes = result;
+
+        bitacora = AddMSG(bitacora, data, 'OK', 200, true);
+
+        return OK(bitacora);
+
+    } catch (error) {
+        if (!data.status) data.status = error.statusCode;
+        let { message } = error;
+        if (!data.messageDEV) data.messageDEV = message;
+        if (!data.dataRes.length === 0) data.dataRes = error;
+        data.messageUSR = "La actualización de producto no fue exitosa";
+
+        bitacora = AddMSG(bitacora, data, 'FAIL');
+
+        return FAIL(bitacora);
+    } finally {
+        // Haya o no error siempre ejecuta aquí
+    }
+};
+
+export const deleteShippingsSubEnviosSe = async (queryParams) => {
+    let bitacora = BITACORA();
+    let data = DATA();
+
+    try {
+        bitacora.process = "Eliminar producto en envío";
+        data.method = "DELETE";
+        data.api = `/shipping/subdocumentESe${queryParams}`;
+        data.process = "Eliminar producto en la colección de Entregas";
+
+        const result = await Shippings.updateOne(
+            {
+                IdEntregaOK: queryParams.IdEntregaOK,
+                IdInstitutoOK: queryParams.IdInstitutoOK,
+                IdNegocioOK: queryParams.IdNegocioOK,
+                "envios.IdDomicilioOK": queryParams.IdDomicilioOK
+            },
+            // Eliminar el subdocumento que cumple con los criterios dados
+            {
+                $pull: {
+                    "envios.$[outer].rastreos.seguimiento": {
+                        Ubicacion: queryParams.Ubicacion // Ajusta este campo según tus necesidades
+                    }
+                }
+            },
+            // Configuración de la opción de arrayFilters para identificar los elementos específicos en los arrays
+            {
+                arrayFilters: [
+                    { "outer.IdDomicilioOK": queryParams.IdDomicilioOK }
+                ]
+            }
+        );
+
+        if (result.nModified === 0) {
+            data.status = 400;
+            data.messageDEV = "La eliminación de producto no fue exitosa";
+            throw Error(data.messageDEV);
+        }
+
+        data.status = 200;
+        data.messageUSR = "La eliminación de producto fue exitosa";
+        data.dataRes = result;
+
+        bitacora = AddMSG(bitacora, data, 'OK', 200, true);
+
+        return OK(bitacora);
+
+    } catch (error) {
+        if (!data.status) data.status = error.statusCode;
+        let { message } = error;
+        if (!data.messageDEV) data.messageDEV = message;
+        if (!data.dataRes.length === 0) data.dataRes = error;
+        data.messageUSR = "La eliminación de producto no fue exitosa";
+
+        bitacora = AddMSG(bitacora, data, 'FAIL');
+
+        return FAIL(bitacora);
+    } finally {
+        // Haya o no error siempre ejecuta aquí
+    }
+};

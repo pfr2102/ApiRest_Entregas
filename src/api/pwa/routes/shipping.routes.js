@@ -34,4 +34,24 @@ router.put('/subdocumentEInf', shippingsController.UpdateSubdocumentEnviosInf);
 router.delete('/subdocumentEInf', shippingsController.DeleteSubdocumentEnviosInf);
 //FIN RUTAS INFO_AD DE ENVIOS==========================================================================================================
 
+//RUTAS PARA SUBDOCUMENTO PRODUCTOS DE SUBDOCUMENTO ENVIOS==============================================================================
+router.post('/subdocumentEPr', shippingsController.addShippingsSubEnviosPr);
+router.put('/subdocumentEPr', shippingsController.UpdateSubdocumentEnviosPr);
+router.delete('/subdocumentEPr', shippingsController.DeleteSubdocumentEnviosPr);
+//FIN RUTAS PRODUCTOS DE ENVIOS==========================================================================================================
+
+//RUTAS PARA SUBDOCUMENTO ESTATUS DE SUBDOCUMENTO ENVIOS==============================================================================
+router.post('/subdocumentESt', shippingsController.addShippingsSubEnviosSt);
+//FIN RUTAS ESTATUS DE ENVIOS==========================================================================================================
+
+//RUTAS PARA SUBDOCUMENTO RASTREOS DE SUBDOCUMENTO ENVIOS==============================================================================
+router.post('/subdocumentERa', shippingsController.addShippingsSubEnviosRa);
+//FIN RUTAS RASTREOS DE ENVIOS==========================================================================================================
+
+//RUTAS PARA SUBDOCUMENTO SEGUIMIENTO DE SUBDOCUMENTO RASTREIS DE SUBDOCUMENTO ENVIOS===================================================
+router.post('/subdocumentESe', shippingsController.addShippingsSubEnviosSe);
+router.put('/subdocumentESe', shippingsController.UpdateSubdocumentEnviosSe);
+router.delete('/subdocumentESe', shippingsController.DeleteSubdocumentEnviosSe);
+//FIN RUTAS SEGUIMIENTO DE SUBDOCUMENTO RASTREIS DE SUBDOCUMENTO ENVIOS=================================================================
+
 export default router;  
