@@ -5,7 +5,8 @@ import config from '../../../config/config';
 //------------------------------------------------------------
 import shippingRoutes from './shipping.routes';
 import etiquetasRoutes from './etiquetas.routes';
-import ordenesRoutes from './ordenes.routes'
+import ordenesRoutes from './ordenes.routes';
+import personasRoutes from './personas.routes';
 //------------------------------------------------------------
 
 const routerAPI = (app) => {
@@ -18,6 +19,7 @@ const routerAPI = (app) => {
     router.use('/pwa/shipping', shippingRoutes);
     router.use('/pwa/etiquetas', etiquetasRoutes);
     router.use('/pwa/ordenes', ordenesRoutes);
+    router.use('/pwa/personas', personasRoutes);
     //----------------------------------------------------
 
     return router;

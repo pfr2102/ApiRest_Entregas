@@ -353,12 +353,12 @@ export const updateShipping = async (IdInstitutoOK, IdNegocioOK, IdEntregaOK, up
 
 //********************************************SUBDOCUMENTOS****************************************** */
 //GET EN GENERAL (funciona mandandole el nombre del subdocumento como parametro)
-export const getSubdocumentById = async (IdInstitutoOK, IdNegocioOK, IdEntregaOK, subdocument) => {
+export const GetOneSubdocsrv = async (IdInstitutoOK, IdNegocioOK, IdEntregaOK, subdocument) => {
     let bitacora = BITACORA();
     let data = DATA();
   
     try {
-      bitacora.process = `Extraer subdocumento ${subdocument} del documento con customId ${IdEntregaOK}`;
+      bitacora.process = `Extraer subdocumento ${subdocument} del documento con Id ${IdEntregaOK}`;
       data.method = "GET";
       data.api = `/shipping/subdocument`;
       data.process = `Extraer subdocumento ${subdocument} de la colección de Entregas`;
@@ -388,7 +388,7 @@ export const getSubdocumentById = async (IdInstitutoOK, IdNegocioOK, IdEntregaOK
   
         if (!subdoc) {
           data.status = 404;
-          data.messageDEV = `El subdocumento ${path} no fue encontrado en el documento con customId ${IdEntregaOK}`;
+          data.messageDEV = `El subdocumento ${path} no fue encontrado en el documento con Id ${IdEntregaOK}`;
           throw Error(data.messageDEV);
         }
       }
@@ -416,12 +416,12 @@ export const getSubdocumentById = async (IdInstitutoOK, IdNegocioOK, IdEntregaOK
 };
 
 //PARA HACER UN GET A UNO DE LOS OBJETOS DEL ARREGLO DE ENVIOS MEDIANTE EL IdDomicilioOK
-export const getShippingMethod = async (IdInstitutoOK, IdNegocioOK, IdEntregaOK, IdDomicilioOK) => {
+export const GetOneEnviosrv = async (IdInstitutoOK, IdNegocioOK, IdEntregaOK, IdDomicilioOK) => {
     let data = DATA();
     let bitacora = BITACORA();
     try {
-      bitacora.process = 'Obtener una entrega.';
-      data.process = 'Obtener una entrega';
+      bitacora.process = 'Obtener un envio.';
+      data.process = 'Obtener un envio';
       data.method = 'GET';
       data.api = '/shipping';
   
@@ -441,7 +441,7 @@ export const getShippingMethod = async (IdInstitutoOK, IdNegocioOK, IdEntregaOK,
             IdEntregaOK
           );
           data.status = 404;
-          data.messageDEV = 'No se encontró el documento de entrega.';
+          data.messageDEV = 'No se encontró el documento de envio.';
           throw new Error(data.messageDEV);
         }
   
@@ -489,15 +489,15 @@ export const getShippingMethod = async (IdInstitutoOK, IdNegocioOK, IdEntregaOK,
 //=============================================PARA SUBDOC INFO_AD=============================================
 //POST
 //POST CON ID PARA INSERTAR EN SUBDOCUMENTOS
-export const addShippingsSub = async (newShipping, queryParams) => {
+export const AddInfoAdsrv = async (newShipping, queryParams) => {
     let bitacora = BITACORA();
     let data = DATA();
 
     try {
-        bitacora.process = "Agregar una nueva Entrega";
+        bitacora.process = "Agregar una nueva info_ad";
         data.method = "POST";
         data.api = `/shipping/subdocument${queryParams}`;
-        data.process = "Agregar una nueva entrega a la colección de Entregas";
+        data.process = "Agregar una nueva info_ad a la colección de Entregas";
 
         const result = await Shippings.updateOne(
             // Usar los tres IDs como condiciones de búsqueda
@@ -512,12 +512,12 @@ export const addShippingsSub = async (newShipping, queryParams) => {
 
         if (result.nModified === 0) {
             data.status = 400;
-            data.messageDEV = "La inserción de la Entrega <<NO>> fue exitosa";
+            data.messageDEV = "La inserción de la info_ad <<NO>> fue exitosa";
             throw Error(data.messageDEV);
         }
 
         data.status = 201;
-        data.messageUSR = "La inserción de la Entrega <<SI>> fue exitosa";
+        data.messageUSR = "La inserción de la info_ad <<SI>> fue exitosa";
         data.dataRes = result;
 
         bitacora = AddMSG(bitacora, data, 'OK', 201, true);
@@ -529,7 +529,7 @@ export const addShippingsSub = async (newShipping, queryParams) => {
         let { message } = error;
         if (!data.messageDEV) data.messageDEV = message;
         if (!data.dataRes.length === 0) data.dataRes = error;
-        data.messageUSR = "La inserción de la Entrega <<NO>> fue exitosa";
+        data.messageUSR = "La inserción de la info_ad <<NO>> fue exitosa";
 
         bitacora = AddMSG(bitacora, data, 'FAIL');
 
@@ -540,15 +540,15 @@ export const addShippingsSub = async (newShipping, queryParams) => {
 };
 
 //PUT
-export const updateSubdocumentService = async (IdInstitutoOK, IdNegocioOK, IdEntregaOK, IdEtiquetaOK, newData) => {
+export const UpdateInfoAdsrv = async (IdInstitutoOK, IdNegocioOK, IdEntregaOK, IdEtiquetaOK, newData) => {
     let bitacora = BITACORA();
     let data = DATA();
 
     try {
-        bitacora.process = `Actualizar la Etiqueta con ID ${IdEtiquetaOK}`;
+        bitacora.process = `Actualizar la info_ad con ID ${IdEtiquetaOK}`;
         data.method = "PUT";
         data.api = `/shipping`;
-        data.process = "Actualizar la Etiqueta en el subdocumento info_ad de Entregas";
+        data.process = "Actualizar la info_ad en Entregas";
 
         // Actualización de la entrega
         const updatedShipping = await Shippings.findOneAndUpdate(
@@ -559,12 +559,12 @@ export const updateSubdocumentService = async (IdInstitutoOK, IdNegocioOK, IdEnt
 
         if (!updatedShipping) {
             data.status = 404;
-            data.messageDEV = `No se encontró una Etiqueta con el ID ${IdEtiquetaOK}`;
+            data.messageDEV = `No se encontró una info_ad con el ID ${IdEtiquetaOK}`;
             throw Error(data.messageDEV);
         }
 
         data.status = 200;
-        data.messageUSR = `La Etiqueta con ID ${IdEtiquetaOK} se actualizó con éxito`;
+        data.messageUSR = `La info_ad con ID ${IdEtiquetaOK} se actualizó con éxito`;
         data.dataRes = updatedShipping;
 
         bitacora = AddMSG(bitacora, data, 'OK', 200, true);
@@ -575,7 +575,7 @@ export const updateSubdocumentService = async (IdInstitutoOK, IdNegocioOK, IdEnt
         let { message } = error;
         if (!data.messageDEV) data.messageDEV = message;
         if (!data.dataRes.length === 0) data.dataRes = error;
-        data.messageUSR = `La actualización de la Etiqueta con ID ${IdEtiquetaOK} falló`;
+        data.messageUSR = `La actualización de la info_ad con ID ${IdEtiquetaOK} falló`;
 
         bitacora = AddMSG(bitacora, data, 'FAIL');
 
@@ -586,7 +586,7 @@ export const updateSubdocumentService = async (IdInstitutoOK, IdNegocioOK, IdEnt
 };
 
 //DELETE
-export const DeleteInfoAdSub = async (IdInstitutoOK, IdNegocioOK, IdEntregaOK, IdEtiquetaOK) => {
+export const DeleteInfoAdsrv = async (IdInstitutoOK, IdNegocioOK, IdEntregaOK, IdEtiquetaOK) => {
     let bitacora = BITACORA();
     let data = DATA();
 
@@ -641,7 +641,7 @@ export const DeleteInfoAdSub = async (IdInstitutoOK, IdNegocioOK, IdEntregaOK, I
 //=============================================PARA SUBDOC ENVIOS=============================================
 //POST
 //POST CON ID PARA INSERTAR EN SUBDOCUMENTOS
-export const addShippingsSubEnvios = async (newShipping, queryParams) => {
+export const AddEnviossrv = async (newShipping, queryParams) => {
     let bitacora = BITACORA();
     let data = DATA();
 
@@ -692,7 +692,7 @@ export const addShippingsSubEnvios = async (newShipping, queryParams) => {
 };
 
 //PUT
-export const updateSubdocumentServiceEnvios = async (IdInstitutoOK, IdNegocioOK, IdEntregaOK, IdDomicilioOK, newData) => {
+export const UpdateEnviossrv = async (IdInstitutoOK, IdNegocioOK, IdEntregaOK, IdDomicilioOK, newData) => {
     let bitacora = BITACORA();
     let data = DATA();
 
@@ -700,7 +700,7 @@ export const updateSubdocumentServiceEnvios = async (IdInstitutoOK, IdNegocioOK,
         bitacora.process = `Actualizar el envío con ID ${IdDomicilioOK}`;
         data.method = "PUT";
         data.api = `/shipping`;
-        data.process = "Actualizar envío en el subdocumento envío de Entregas";
+        data.process = "Actualizar envío de Entregas";
 
         // Actualización de la entrega
         const updatedShipping = await Shippings.findOneAndUpdate(
@@ -738,7 +738,7 @@ export const updateSubdocumentServiceEnvios = async (IdInstitutoOK, IdNegocioOK,
 };
 
 //DELETE
-export const DeleteInfoAdSubEnvios = async (IdInstitutoOK, IdNegocioOK, IdEntregaOK, IdDomicilioOK) => {
+export const DeleteEnviossrv = async (IdInstitutoOK, IdNegocioOK, IdEntregaOK, IdDomicilioOK) => {
     let bitacora = BITACORA();
     let data = DATA();
 
@@ -769,7 +769,7 @@ export const DeleteInfoAdSubEnvios = async (IdInstitutoOK, IdNegocioOK, IdEntreg
         }
 
         data.status = 200;
-        data.messageUSR = "Envío eliminada correctamente";
+        data.messageUSR = "Envío eliminado correctamente";
 
         bitacora = AddMSG(bitacora, data, 'OK', 200, true);
 
@@ -791,7 +791,7 @@ export const DeleteInfoAdSubEnvios = async (IdInstitutoOK, IdNegocioOK, IdEntreg
 //=============================================FIN PARA SUBDOC ENVIOS=============================================
 
 //=============================================PARA SUBDOC INFO_AD DE SUBDOC ENVIOS=============================================
-export const addShippingsSubEnviosInf = async (newInfoAd, queryParams) => {
+export const AddEnviosInfoAdsrv = async (newInfoAd, queryParams) => {
     let bitacora = BITACORA();
     let data = DATA();
 
@@ -799,7 +799,7 @@ export const addShippingsSubEnviosInf = async (newInfoAd, queryParams) => {
         bitacora.process = "Agregar una nueva info_ad a envío";
         data.method = "POST";
         data.api = `/shipping/subdocumentEInf${queryParams}`;
-        data.process = "Agregar una nueva info_ad a la colección de Entregas";
+        data.process = "Agregar una nueva info_ad a envio";
 
         const result = await Shippings.updateOne(
             // Usar los tres IDs como condiciones de búsqueda
@@ -843,7 +843,7 @@ export const addShippingsSubEnviosInf = async (newInfoAd, queryParams) => {
     }
 };
 
-export const updateShippingsSubEnviosInf = async (updatedInfoAd, queryParams) => {
+export const UpdateEnviosInfoAdsrv = async (updatedInfoAd, queryParams) => {
     let bitacora = BITACORA();
     let data = DATA();
 
@@ -851,7 +851,7 @@ export const updateShippingsSubEnviosInf = async (updatedInfoAd, queryParams) =>
         bitacora.process = "Actualizar info_ad en envío";
         data.method = "PUT";
         data.api = `/shipping/subdocumentEInf${queryParams}`;
-        data.process = "Actualizar info_ad en la colección de Entregas";
+        data.process = "Actualizar info_ad en envio";
 
         const result = await Shippings.updateOne(
             { 
@@ -905,7 +905,7 @@ export const updateShippingsSubEnviosInf = async (updatedInfoAd, queryParams) =>
     }
 };
 
-export const deleteShippingsSubEnviosInf = async (queryParams) => {
+export const DeleteEnviosInfoAdsrv = async (queryParams) => {
     let bitacora = BITACORA();
     let data = DATA();
 
@@ -913,7 +913,7 @@ export const deleteShippingsSubEnviosInf = async (queryParams) => {
         bitacora.process = "Eliminar info_ad en envío";
         data.method = "DELETE";
         data.api = `/shipping/subdocumentEInf${queryParams}`;
-        data.process = "Eliminar info_ad en la colección de Entregas";
+        data.process = "Eliminar info_ad en envio";
 
         const result = await Shippings.updateOne(
             { 
@@ -958,7 +958,7 @@ export const deleteShippingsSubEnviosInf = async (queryParams) => {
 //=============================================FIN PARA SUBDOC INFO_AD DE SUBDOC ENVIOS=============================================
 
 //=============================================PARA SUBDOC PRODUCTOS DE SUBDOC ENVIOS=============================================
-export const addShippingsSubEnviosPr = async (newInfoAd, queryParams) => {
+export const AddProductossrv = async (newInfoAd, queryParams) => {
     let bitacora = BITACORA();
     let data = DATA();
 
@@ -966,7 +966,7 @@ export const addShippingsSubEnviosPr = async (newInfoAd, queryParams) => {
         bitacora.process = "Agregar un nuevo producto a envío";
         data.method = "POST";
         data.api = `/shipping/subdocumentEPr${queryParams}`;
-        data.process = "Agregar un nuevo producto a la colección de Entregas";
+        data.process = "Agregar un nuevo producto a envio";
 
         const result = await Shippings.updateOne(
             // Usar los tres IDs como condiciones de búsqueda
@@ -1010,7 +1010,7 @@ export const addShippingsSubEnviosPr = async (newInfoAd, queryParams) => {
     }
 };
 
-export const updateShippingsSubEnviosPr = async (updatedInfoAd, queryParams) => {
+export const UpdateProductossrv = async (updatedInfoAd, queryParams) => {
     let bitacora = BITACORA();
     let data = DATA();
 
@@ -1018,7 +1018,7 @@ export const updateShippingsSubEnviosPr = async (updatedInfoAd, queryParams) => 
         bitacora.process = "Actualizar producto en envío";
         data.method = "PUT";
         data.api = `/shipping/subdocumentEPr${queryParams}`;
-        data.process = "Actualizar producto en la colección de Entregas";
+        data.process = "Actualizar producto en envios";
 
         const result = await Shippings.updateOne(
             { 
@@ -1072,7 +1072,7 @@ export const updateShippingsSubEnviosPr = async (updatedInfoAd, queryParams) => 
     }
 };
 
-export const deleteShippingsSubEnviosPr = async (queryParams) => {
+export const DeleteProductossrv = async (queryParams) => {
     let bitacora = BITACORA();
     let data = DATA();
 
@@ -1080,7 +1080,7 @@ export const deleteShippingsSubEnviosPr = async (queryParams) => {
         bitacora.process = "Eliminar producto en envío";
         data.method = "DELETE";
         data.api = `/shipping/subdocumentEPr${queryParams}`;
-        data.process = "Eliminar producto en la colección de Entregas";
+        data.process = "Eliminar producto en envios";
 
         const result = await Shippings.updateOne(
             { 
@@ -1125,7 +1125,7 @@ export const deleteShippingsSubEnviosPr = async (queryParams) => {
 //=============================================FIN PARA SUBDOC PRODUCTOS DE SUBDOC ENVIOS=============================================
 
 //=============================================PARA SUBDOC ESTATUS DE SUBDOC ENVIOS=============================================
-export const addShippingsSubEnviosSt = async (newInfoAd, queryParams) => {
+export const AddEstatussrv = async (newInfoAd, queryParams) => {
     let bitacora = BITACORA();
     let data = DATA();
 
@@ -1133,7 +1133,7 @@ export const addShippingsSubEnviosSt = async (newInfoAd, queryParams) => {
         bitacora.process = "Agregar un nuevo estatus a envío";
         data.method = "POST";
         data.api = `/shipping/subdocumentESt${queryParams}`;
-        data.process = "Agregar un nuevo estatus a la colección de Entregas";
+        data.process = "Agregar un nuevo estatus a envio";
 
         const result = await Shippings.updateOne(
             // Usar los tres IDs como condiciones de búsqueda
@@ -1179,7 +1179,7 @@ export const addShippingsSubEnviosSt = async (newInfoAd, queryParams) => {
 
 
 //=============================================PARA SUBDOC RASTREOS DE SUBDOC ENVIOS=============================================
-export const addShippingsSubEnviosRa = async (newInfoAd, queryParams) => {
+export const AddRastreossrv = async (newInfoAd, queryParams) => {
     let bitacora = BITACORA();
     let data = DATA();
 
@@ -1187,7 +1187,7 @@ export const addShippingsSubEnviosRa = async (newInfoAd, queryParams) => {
         bitacora.process = "Agregar un nuevo rastreo a envío";
         data.method = "POST";
         data.api = `/shipping/subdocumentERa${queryParams}`;
-        data.process = "Agregar un nuevo rastreo a la colección de Entregas";
+        data.process = "Agregar un nuevo rastreo a envio";
 
         const result = await Shippings.updateOne(
             // Usar los tres IDs como condiciones de búsqueda
@@ -1204,12 +1204,12 @@ export const addShippingsSubEnviosRa = async (newInfoAd, queryParams) => {
 
         if (result.nModified === 0) {
             data.status = 400;
-            data.messageDEV = "La inserción de estatus <<NO>> fue exitosa";
+            data.messageDEV = "La inserción de rastreo <<NO>> fue exitosa";
             throw Error(data.messageDEV);
         }
 
         data.status = 201;
-        data.messageUSR = "La inserción de estatus <<SI>> fue exitosa";
+        data.messageUSR = "La inserción de rastreo <<SI>> fue exitosa";
         data.dataRes = result;
 
         bitacora = AddMSG(bitacora, data, 'OK', 201, true);
@@ -1221,7 +1221,7 @@ export const addShippingsSubEnviosRa = async (newInfoAd, queryParams) => {
         let { message } = error;
         if (!data.messageDEV) data.messageDEV = message;
         if (!data.dataRes.length === 0) data.dataRes = error;
-        data.messageUSR = "La inserción de estatus <<NO>> fue exitosa";
+        data.messageUSR = "La inserción de rastreo <<NO>> fue exitosa";
 
         bitacora = AddMSG(bitacora, data, 'FAIL');
 
@@ -1232,15 +1232,15 @@ export const addShippingsSubEnviosRa = async (newInfoAd, queryParams) => {
 };
 
 //=============================================PARA SUBDOC SEGUIMIENTO DE SUBDOC ENVIOS=============================================
-export const addShippingsSubEnviosSe = async (newInfoAd, queryParams) => {
+export const AddSeguimientosrv = async (newInfoAd, queryParams) => {
     let bitacora = BITACORA();
     let data = DATA();
 
     try {
-        bitacora.process = "Agregar un nuevo estatus a envío";
+        bitacora.process = "Agregar un nuevo seguimiento a rastreos";
         data.method = "POST";
         data.api = `/shipping/subdocumentESt${queryParams}`;
-        data.process = "Agregar un nuevo estatus a la colección de Entregas";
+        data.process = "Agregar un nuevo seguimiento a rastreos";
 
         const result = await Shippings.updateOne(
             // Use the three IDs as search conditions
@@ -1257,12 +1257,12 @@ export const addShippingsSubEnviosSe = async (newInfoAd, queryParams) => {
 
         if (result.nModified === 0) {
             data.status = 400;
-            data.messageDEV = "La inserción de estatus <<NO>> fue exitosa";
+            data.messageDEV = "La inserción de seguimiento <<NO>> fue exitosa";
             throw Error(data.messageDEV);
         }
 
         data.status = 201;
-        data.messageUSR = "La inserción de estatus <<SI>> fue exitosa";
+        data.messageUSR = "La inserción de seguimiento <<SI>> fue exitosa";
         data.dataRes = result;
 
         bitacora = AddMSG(bitacora, data, 'OK', 201, true);
@@ -1274,7 +1274,7 @@ export const addShippingsSubEnviosSe = async (newInfoAd, queryParams) => {
         let { message } = error;
         if (!data.messageDEV) data.messageDEV = message;
         if (!data.dataRes.length === 0) data.dataRes = error;
-        data.messageUSR = "La inserción de estatus <<NO>> fue exitosa";
+        data.messageUSR = "La inserción de seguimiento <<NO>> fue exitosa";
 
         bitacora = AddMSG(bitacora, data, 'FAIL');
 
@@ -1284,15 +1284,15 @@ export const addShippingsSubEnviosSe = async (newInfoAd, queryParams) => {
     }
 };
 
-export const updateShippingsSubEnviosSe = async (updatedInfoAd, queryParams) => {
+export const UpdateSeguimientosrv = async (updatedInfoAd, queryParams) => {
     let bitacora = BITACORA();
     let data = DATA();
 
     try {
-        bitacora.process = "Actualizar producto en envío";
+        bitacora.process = "Actualizar seguimiento en rastreo";
         data.method = "PUT";
         data.api = `/shipping/subdocumentEPr${queryParams}`;
-        data.process = "Actualizar producto en la colección de Entregas";
+        data.process = "Actualizar seguimiento en rastreo";
 
         const result = await Shippings.updateOne(
             {
@@ -1319,12 +1319,12 @@ export const updateShippingsSubEnviosSe = async (updatedInfoAd, queryParams) => 
 
         if (result.nModified === 0) {
             data.status = 400;
-            data.messageDEV = "La actualización de producto no fue exitosa";
+            data.messageDEV = "La actualización de seguimiento no fue exitosa";
             throw Error(data.messageDEV);
         }
 
         data.status = 200;
-        data.messageUSR = "La actualización de producto fue exitosa";
+        data.messageUSR = "La actualización de seguimiento fue exitosa";
         data.dataRes = result;
 
         bitacora = AddMSG(bitacora, data, 'OK', 200, true);
@@ -1336,7 +1336,7 @@ export const updateShippingsSubEnviosSe = async (updatedInfoAd, queryParams) => 
         let { message } = error;
         if (!data.messageDEV) data.messageDEV = message;
         if (!data.dataRes.length === 0) data.dataRes = error;
-        data.messageUSR = "La actualización de producto no fue exitosa";
+        data.messageUSR = "La actualización de seguimiento no fue exitosa";
 
         bitacora = AddMSG(bitacora, data, 'FAIL');
 
@@ -1346,15 +1346,15 @@ export const updateShippingsSubEnviosSe = async (updatedInfoAd, queryParams) => 
     }
 };
 
-export const deleteShippingsSubEnviosSe = async (queryParams) => {
+export const DeleteSeguimientosrv = async (queryParams) => {
     let bitacora = BITACORA();
     let data = DATA();
 
     try {
-        bitacora.process = "Eliminar producto en envío";
+        bitacora.process = "Eliminar seguimiento en rastreo";
         data.method = "DELETE";
         data.api = `/shipping/subdocumentESe${queryParams}`;
-        data.process = "Eliminar producto en la colección de Entregas";
+        data.process = "Eliminar seguimiento en rastreo";
 
         const result = await Shippings.updateOne(
             {
@@ -1381,12 +1381,12 @@ export const deleteShippingsSubEnviosSe = async (queryParams) => {
 
         if (result.nModified === 0) {
             data.status = 400;
-            data.messageDEV = "La eliminación de producto no fue exitosa";
+            data.messageDEV = "La eliminación de seguimiento no fue exitosa";
             throw Error(data.messageDEV);
         }
 
         data.status = 200;
-        data.messageUSR = "La eliminación de producto fue exitosa";
+        data.messageUSR = "La eliminación de seguimiento fue exitosa";
         data.dataRes = result;
 
         bitacora = AddMSG(bitacora, data, 'OK', 200, true);
@@ -1398,7 +1398,7 @@ export const deleteShippingsSubEnviosSe = async (queryParams) => {
         let { message } = error;
         if (!data.messageDEV) data.messageDEV = message;
         if (!data.dataRes.length === 0) data.dataRes = error;
-        data.messageUSR = "La eliminación de producto no fue exitosa";
+        data.messageUSR = "La eliminación de seguimiento no fue exitosa";
 
         bitacora = AddMSG(bitacora, data, 'FAIL');
 

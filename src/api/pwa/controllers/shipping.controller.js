@@ -129,7 +129,7 @@ export const GetOneSubdoc = async (req, res, next) => {
     try {
       const { IdInstitutoOK, IdNegocioOK, IdEntregaOK, subdocument } = req.query;
   
-      const result = await shippingServices.getSubdocumentById(IdInstitutoOK, IdNegocioOK, IdEntregaOK, subdocument);
+      const result = await shippingServices.GetOneSubdocsrv(IdInstitutoOK, IdNegocioOK, IdEntregaOK, subdocument);
   
       if (result) {
         return res.status(result.status).json(result);
@@ -140,10 +140,10 @@ export const GetOneSubdoc = async (req, res, next) => {
 };
 
 //PARA HACER UN GET A UNO DE LOS OBJETOS DEL ARREGLO DE ENVIOS MEDIANTE EL IdDomicilioOK
-export const GetOneShippingEnvio = async (req, res, next) => {
+export const GetOneEnvio = async (req, res, next) => {
     try {
       const { IdInstitutoOK, IdNegocioOK, IdEntregaOK, IdDomicilioOK } = req.query;
-      const shippingData = await shippingServices.getShippingMethod(
+      const shippingData = await shippingServices.GetOneEnviosrv(
         IdInstitutoOK,
         IdNegocioOK,
         IdEntregaOK,
@@ -162,7 +162,7 @@ export const GetOneShippingEnvio = async (req, res, next) => {
 
 //=============================================PARA SUBDOC INFO_AD=============================================
 //POST
-export const addShippingsSub = async (req, res, next) => {
+export const AddInfoAd = async (req, res, next) => {
     try {
         const queryParams = req.query; // Obtener los query parameters
 
@@ -172,7 +172,7 @@ export const addShippingsSub = async (req, res, next) => {
             ...queryParams
         };
 
-        const shippingsAdded = await shippingServices.addShippingsSub(newShipping, queryParams);
+        const shippingsAdded = await shippingServices.AddInfoAdsrv(newShipping, queryParams);
 
         if (shippingsAdded) {
             return res.status(shippingsAdded.status).json(shippingsAdded);
@@ -183,12 +183,12 @@ export const addShippingsSub = async (req, res, next) => {
 };
 
 //PUT
-export const UpdateSubdocument = async (req, res, next) => {
+export const UpdateInfoAd = async (req, res, next) => {
     try {
         const { IdInstitutoOK, IdNegocioOK, IdEntregaOK, IdEtiquetaOK } = req.query; // Obtén los valores de los query parameters
         const newData = req.body; // Obtén los nuevos datos desde el cuerpo de la solicitud
 
-        const result = await shippingServices.updateSubdocumentService(IdInstitutoOK, IdNegocioOK, IdEntregaOK, IdEtiquetaOK, newData);
+        const result = await shippingServices.UpdateInfoAdsrv(IdInstitutoOK, IdNegocioOK, IdEntregaOK, IdEtiquetaOK, newData);
 
         if (result.status === 200) {
             return res.status(200).json(result);
@@ -201,12 +201,12 @@ export const UpdateSubdocument = async (req, res, next) => {
 };
 
 //DELETE
-export const DeleteSubdocument = async (req, res, next) => {
+export const DeleteInfoAd = async (req, res, next) => {
     try {
         const { IdInstitutoOK, IdNegocioOK, IdEntregaOK, IdEtiquetaOK } = req.query; // Obtén los valores de los query parameters
 
         // Llama al servicio de eliminación y pasa los valores a eliminar
-        const result = await shippingServices.DeleteInfoAdSub(IdInstitutoOK, IdNegocioOK, IdEntregaOK, IdEtiquetaOK);
+        const result = await shippingServices.DeleteInfoAdsrv(IdInstitutoOK, IdNegocioOK, IdEntregaOK, IdEtiquetaOK);
 
         return res.status(result.status).json(result);
     } catch (error) {
@@ -217,7 +217,7 @@ export const DeleteSubdocument = async (req, res, next) => {
 
 //=============================================PARA SUBDOC ENVIOS=============================================
 //POST
-export const addShippingsSubEnvios = async (req, res, next) => {
+export const AddEnvios = async (req, res, next) => {
     try {
         const queryParams = req.query; // Obtener los query parameters
 
@@ -227,7 +227,7 @@ export const addShippingsSubEnvios = async (req, res, next) => {
             ...queryParams
         };
 
-        const shippingsAdded = await shippingServices.addShippingsSubEnvios(newShipping, queryParams);
+        const shippingsAdded = await shippingServices.AddEnviossrv(newShipping, queryParams);
 
         if (shippingsAdded) {
             return res.status(shippingsAdded.status).json(shippingsAdded);
@@ -238,12 +238,12 @@ export const addShippingsSubEnvios = async (req, res, next) => {
 };
 
 //PUT
-export const UpdateSubdocumentEnvios = async (req, res, next) => {
+export const UpdateEnvios = async (req, res, next) => {
     try {
         const { IdInstitutoOK, IdNegocioOK, IdEntregaOK, IdEtiquetaOK } = req.query; // Obtén los valores de los query parameters
         const newData = req.body; // Obtén los nuevos datos desde el cuerpo de la solicitud
 
-        const result = await shippingServices.updateSubdocumentServiceEnvios(IdInstitutoOK, IdNegocioOK, IdEntregaOK, IdEtiquetaOK, newData);
+        const result = await shippingServices.UpdateEnviossrv(IdInstitutoOK, IdNegocioOK, IdEntregaOK, IdEtiquetaOK, newData);
 
         if (result.status === 200) {
             return res.status(200).json(result);
@@ -256,12 +256,12 @@ export const UpdateSubdocumentEnvios = async (req, res, next) => {
 };
 
 //DELETE
-export const DeleteSubdocumentEnvios = async (req, res, next) => {
+export const DeleteEnvios = async (req, res, next) => {
     try {
         const { IdInstitutoOK, IdNegocioOK, IdEntregaOK, IdEtiquetaOK } = req.query; // Obtén los valores de los query parameters
 
         // Llama al servicio de eliminación y pasa los valores a eliminar
-        const result = await shippingServices.DeleteInfoAdSubEnvios(IdInstitutoOK, IdNegocioOK, IdEntregaOK, IdEtiquetaOK);
+        const result = await shippingServices.DeleteEnviossrv(IdInstitutoOK, IdNegocioOK, IdEntregaOK, IdEtiquetaOK);
 
         return res.status(result.status).json(result);
     } catch (error) {
@@ -271,7 +271,7 @@ export const DeleteSubdocumentEnvios = async (req, res, next) => {
 //=============================================FIN PARA SUBDOC ENVIOS=============================================
 
 //=============================================PARA SUBDOC INFO_AD DE SUBDOC ENVIOS=============================================
-export const addShippingsSubEnviosInf = async (req, res, next) => {
+export const AddEnviosInfoAd = async (req, res, next) => {
     try {
         const queryParams = req.query; // Obtener los query parameters
 
@@ -281,17 +281,17 @@ export const addShippingsSubEnviosInf = async (req, res, next) => {
             ...queryParams
         };
 
-        const shippingsAdded = await shippingServices.addShippingsSubEnviosInf(newInfoAd, queryParams);
+        const enviosinfadAdded = await shippingServices.AddEnviosInfoAdsrv(newInfoAd, queryParams);
 
-        if (shippingsAdded) {
-            return res.status(shippingsAdded.status).json(shippingsAdded);
+        if (enviosinfadAdded) {
+            return res.status(enviosinfadAdded.status).json(enviosinfadAdded);
         }
     } catch (error) {
         next(error);
     }
 };
 
-export const UpdateSubdocumentEnviosInf = async (req, res, next) => {
+export const UpdateEnviosInfoAd = async (req, res, next) => {
     try {
         const queryParams = req.query; // Obtener los query parameters
 
@@ -301,24 +301,24 @@ export const UpdateSubdocumentEnviosInf = async (req, res, next) => {
             ...queryParams
         };
 
-        const shippingsUpdated = await shippingServices.updateShippingsSubEnviosInf(updatedInfoAd, queryParams);
+        const enviosinfadUpdated = await shippingServices.UpdateEnviosInfoAdsrv(updatedInfoAd, queryParams);
 
-        if (shippingsUpdated) {
-            return res.status(shippingsUpdated.status).json(shippingsUpdated);
+        if (enviosinfadUpdated) {
+            return res.status(enviosinfadUpdated.status).json(enviosinfadUpdated);
         }
     } catch (error) {
         next(error);
     }
 };
 
-export const DeleteSubdocumentEnviosInf = async (req, res, next) => {
+export const DeleteEnviosInfoAd = async (req, res, next) => {
     try {
         const queryParams = req.query; // Obtener los query parameters
 
-        const shippingsDeleted = await shippingServices.deleteShippingsSubEnviosInf(queryParams);
+        const enviosinfadDeleted = await shippingServices.DeleteEnviosInfoAdsrv(queryParams);
 
-        if (shippingsDeleted) {
-            return res.status(shippingsDeleted.status).json(shippingsDeleted);
+        if (enviosinfadDeleted) {
+            return res.status(enviosinfadDeleted.status).json(enviosinfadDeleted);
         }
     } catch (error) {
         next(error);
@@ -328,7 +328,7 @@ export const DeleteSubdocumentEnviosInf = async (req, res, next) => {
 
 
 //=============================================PARA SUBDOC PRODUCTOS DE SUBDOC ENVIOS=============================================
-export const addShippingsSubEnviosPr = async (req, res, next) => {
+export const AddProductos = async (req, res, next) => {
     try {
         const queryParams = req.query; // Obtener los query parameters
 
@@ -338,17 +338,17 @@ export const addShippingsSubEnviosPr = async (req, res, next) => {
             ...queryParams
         };
 
-        const shippingsAdded = await shippingServices.addShippingsSubEnviosPr(newInfoAd, queryParams);
+        const productosAdded = await shippingServices.AddProductossrv(newInfoAd, queryParams);
 
-        if (shippingsAdded) {
-            return res.status(shippingsAdded.status).json(shippingsAdded);
+        if (productosAdded) {
+            return res.status(productosAdded.status).json(productosAdded);
         }
     } catch (error) {
         next(error);
     }
 };
 
-export const UpdateSubdocumentEnviosPr = async (req, res, next) => {
+export const UpdateProductos = async (req, res, next) => {
     try {
         const queryParams = req.query; // Obtener los query parameters
 
@@ -358,24 +358,24 @@ export const UpdateSubdocumentEnviosPr = async (req, res, next) => {
             ...queryParams
         };
 
-        const shippingsUpdated = await shippingServices.updateShippingsSubEnviosPr(updatedInfoAd, queryParams);
+        const productosUpdated = await shippingServices.UpdateProductossrv(updatedInfoAd, queryParams);
 
-        if (shippingsUpdated) {
-            return res.status(shippingsUpdated.status).json(shippingsUpdated);
+        if (productosUpdated) {
+            return res.status(productosUpdated.status).json(productosUpdated);
         }
     } catch (error) {
         next(error);
     }
 };
 
-export const DeleteSubdocumentEnviosPr = async (req, res, next) => {
+export const DeleteProductos = async (req, res, next) => {
     try {
         const queryParams = req.query; // Obtener los query parameters
 
-        const shippingsDeleted = await shippingServices.deleteShippingsSubEnviosPr(queryParams);
+        const productosDeleted = await shippingServices.DeleteProductossrv(queryParams);
 
-        if (shippingsDeleted) {
-            return res.status(shippingsDeleted.status).json(shippingsDeleted);
+        if (productosDeleted) {
+            return res.status(productosDeleted.status).json(productosDeleted);
         }
     } catch (error) {
         next(error);
@@ -384,7 +384,7 @@ export const DeleteSubdocumentEnviosPr = async (req, res, next) => {
 //=============================================FIN PARA SUBDOC PRODUCTOS DE SUBDOC ENVIOS=============================================
 
 //=============================================PARA SUBDOC ESTATUS DE SUBDOC ENVIOS=============================================
-export const addShippingsSubEnviosSt = async (req, res, next) => {
+export const AddEstatus = async (req, res, next) => {
     try {
         const queryParams = req.query; // Obtener los query parameters
 
@@ -393,11 +393,12 @@ export const addShippingsSubEnviosSt = async (req, res, next) => {
             ...req.body,
             ...queryParams
         };
+        console.log("DATOS", queryParams, req.body);
 
-        const shippingsAdded = await shippingServices.addShippingsSubEnviosSt(newInfoAd, queryParams);
+        const estatusAdded = await shippingServices.AddEstatussrv(newInfoAd, queryParams);
 
-        if (shippingsAdded) {
-            return res.status(shippingsAdded.status).json(shippingsAdded);
+        if (estatusAdded) {
+            return res.status(estatusAdded.status).json(estatusAdded);
         }
     } catch (error) {
         next(error);
@@ -407,7 +408,7 @@ export const addShippingsSubEnviosSt = async (req, res, next) => {
 
 
 //=============================================PARA SUBDOC RASTREOS DE SUBDOC ENVIOS=============================================
-export const addShippingsSubEnviosRa = async (req, res, next) => {
+export const AddRastreos = async (req, res, next) => {
     try {
         const queryParams = req.query; // Obtener los query parameters
 
@@ -417,10 +418,10 @@ export const addShippingsSubEnviosRa = async (req, res, next) => {
             ...queryParams
         };
 
-        const shippingsAdded = await shippingServices.addShippingsSubEnviosRa(newInfoAd, queryParams);
+        const rastreosAdded = await shippingServices.AddRastreossrv(newInfoAd, queryParams);
 
-        if (shippingsAdded) {
-            return res.status(shippingsAdded.status).json(shippingsAdded);
+        if (rastreosAdded) {
+            return res.status(rastreosAdded.status).json(rastreosAdded);
         }
     } catch (error) {
         next(error);
@@ -429,7 +430,7 @@ export const addShippingsSubEnviosRa = async (req, res, next) => {
 //=============================================FIN PARA SUBDOC RASTREOS DE SUBDOC ENVIOS=============================================
 
 //=============================================PARA SUBDOC SEGUIMIENTO DE SUBDOC RASTREOS DE SUBDOC ENVIOS===========================
-export const addShippingsSubEnviosSe = async (req, res, next) => {
+export const AddSeguimiento = async (req, res, next) => {
     try {
         const queryParams = req.query; // Obtener los query parameters
 
@@ -439,17 +440,17 @@ export const addShippingsSubEnviosSe = async (req, res, next) => {
             ...queryParams
         };
 
-        const shippingsAdded = await shippingServices.addShippingsSubEnviosSe(newInfoAd, queryParams);
+        const seguimientoAdded = await shippingServices.AddSeguimientosrv(newInfoAd, queryParams);
 
-        if (shippingsAdded) {
-            return res.status(shippingsAdded.status).json(shippingsAdded);
+        if (seguimientoAdded) {
+            return res.status(seguimientoAdded.status).json(seguimientoAdded);
         }
     } catch (error) {
         next(error);
     }
 };
 
-export const UpdateSubdocumentEnviosSe = async (req, res, next) => {
+export const UpdateSeguimiento = async (req, res, next) => {
     try {
         const queryParams = req.query; // Obtener los query parameters
 
@@ -459,10 +460,10 @@ export const UpdateSubdocumentEnviosSe = async (req, res, next) => {
             ...queryParams
         };
 
-        const shippingsAdded = await shippingServices.updateShippingsSubEnviosSe(newInfoAd, queryParams);
+        const seguimientoAdded = await shippingServices.UpdateSeguimientosrv(newInfoAd, queryParams);
 
-        if (shippingsAdded) {
-            return res.status(shippingsAdded.status).json(shippingsAdded);
+        if (seguimientoAdded) {
+            return res.status(seguimientoAdded.status).json(seguimientoAdded);
         }
     } catch (error) {
         next(error);
@@ -470,14 +471,14 @@ export const UpdateSubdocumentEnviosSe = async (req, res, next) => {
 };
 
 
-export const DeleteSubdocumentEnviosSe = async (req, res, next) => {
+export const DeleteSeguimiento = async (req, res, next) => {
     try {
         const queryParams = req.query; // Obtener los query parameters
 
-        const shippingsDeleted = await shippingServices.deleteShippingsSubEnviosSe(queryParams);
+        const seguimientoDeleted = await shippingServices.DeleteSeguimientosrv(queryParams);
 
-        if (shippingsDeleted) {
-            return res.status(shippingsDeleted.status).json(shippingsDeleted);
+        if (seguimientoDeleted) {
+            return res.status(seguimientoDeleted.status).json(seguimientoDeleted);
         }
     } catch (error) {
         next(error);

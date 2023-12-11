@@ -5,8 +5,8 @@ import obtenerModelo from '../../../config/modelsFactory';
 
 
 const etiquetasSchemaPWA = new mongoose.Schema({
-	IdInstitutoOK: { type: String },
-	IdEtiquetaOK: { type: String },
+	IdPersonaOK: { type: String },
+	IdPersonaBK: { type: String },
 });
 
 
@@ -16,7 +16,7 @@ const dbCluster = config.CLUSTER;
   
 const conn =  obtenerConexion(dbName, dbCluster);
 	
-const model = obtenerModelo('cat_etiquetas', 
+const model = obtenerModelo('cat_personas', 
 						etiquetasSchemaPWA,
 						  conn, 
 						  dbName, 
