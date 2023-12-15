@@ -407,6 +407,26 @@ export const AddEstatus = async (req, res, next) => {
         next(error);
     }
 };
+
+export const UpdateAllEstatus = async (req, res, next) => {
+    try {
+        const queryParams = req.query; // Obtener los query parameters
+
+        // Incorporar query parameters a los datos de envío
+        const updateInfo = {
+            ...req.body,
+            ...queryParams
+        };
+
+        const estatusUpdated = await shippingServices.UpdateAllEstatusSrv(updateInfo, queryParams);
+
+        if (estatusUpdated) {
+            return res.status(estatusUpdated.status).json(estatusUpdated);
+        }
+    } catch (error) {
+        next(error);
+    }
+};
 //=============================================FIN PARA SUBDOC ESTATUS DE SUBDOC ENVIOS=============================================
 
 
@@ -425,6 +445,24 @@ export const AddRastreos = async (req, res, next) => {
 
         if (rastreosAdded) {
             return res.status(rastreosAdded.status).json(rastreosAdded);
+        }
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const DeleteRastreo = async (req, res, next) => {
+    try {
+        const queryParams = req.query; // Obtener los query parameters
+
+        if (!queryParams.NumeroGuia) {
+            return res.status(400).json({ error: "El parámetro 'NumeroGuia' es requerido." });
+        }
+
+        const rastreoDeleted = await shippingServices.DeleteRastreossrv(queryParams);
+
+        if (rastreoDeleted) {
+            return res.status(rastreoDeleted.status).json(rastreoDeleted);
         }
     } catch (error) {
         next(error);

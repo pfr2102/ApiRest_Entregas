@@ -13,12 +13,12 @@ const shippingsSchemaPWA = new mongoose.Schema({
     info_ad: [
         {
             _id: false,
-            IdEtiquetaOK: { type: String },     //Si trai
-            IdEtiqueta: { type: String },       //No trai
-            Etiqueta: { type: String },         //Si trai
-            Valor: { type: String },            //Si trai
-            IdTipoSeccionOK: { type: String },  //No trai
-            Secuencia: { type: Number },        //Si trai
+            IdEtiquetaOK: { type: String },     
+            IdEtiqueta: { type: String },       
+            Etiqueta: { type: String },         
+            Valor: { type: String },            
+            IdTipoSeccionOK: { type: String },  
+            Secuencia: { type: Number },        
             detail_row: {
                 _id: false,
                 Activo: { type: String, default: 'S' },

@@ -42,10 +42,12 @@ router.delete('/subdocumentEPr', shippingsController.DeleteProductos);
 
 //RUTAS PARA SUBDOCUMENTO ESTATUS DE SUBDOCUMENTO ENVIOS==============================================================================
 router.post('/subdocumentESt', shippingsController.AddEstatus);
+router.put('/updateAllEstatus', shippingsController.UpdateAllEstatus);
 //FIN RUTAS ESTATUS DE ENVIOS==========================================================================================================
 
 //RUTAS PARA SUBDOCUMENTO RASTREOS DE SUBDOCUMENTO ENVIOS==============================================================================
 router.post('/subdocumentERa', shippingsController.AddRastreos);
+router.delete('/subdocumentERa', shippingsController.DeleteRastreo);
 //FIN RUTAS RASTREOS DE ENVIOS==========================================================================================================
 
 //RUTAS PARA SUBDOCUMENTO SEGUIMIENTO DE SUBDOCUMENTO RASTREOS DE SUBDOCUMENTO ENVIOS===================================================

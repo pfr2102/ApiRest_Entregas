@@ -1183,7 +1183,57 @@ export const AddEstatussrv = async (newInfoAd, queryParams) => {
     }
 };
 
+export const UpdateAllEstatusSrv = async (updateInfo, queryParams) => {
+    let bitacora = BITACORA();
+    let data = DATA();
 
+    try {
+        bitacora.process = "Actualizar todos los estatus en envío";
+        data.method = "PUT";
+        data.api = `/shipping/updateAllEstatus${queryParams}`;
+        data.process = "Actualizar todos los estatus en envio";
+
+        const result = await Shippings.updateOne(
+            // Usar los tres IDs como condiciones de búsqueda
+            {
+                IdEntregaOK: queryParams.IdEntregaOK,
+                IdInstitutoOK: queryParams.IdInstitutoOK,
+                IdNegocioOK: queryParams.IdNegocioOK,
+                // Agregar condición para encontrar el envío específico dentro del subdocumento envios
+                "envios.IdDomicilioOK": queryParams.IdDomicilioOK
+            },
+            // Actualizar el campo "Actual" en todos los objetos dentro del arreglo "estatus"
+            { $set: { "envios.$[].estatus.$[].Actual": updateInfo.Actual } }
+        );
+
+        if (result.nModified === 0) {
+            data.status = 400;
+            data.messageDEV = "La actualización de estatus <<NO>> fue exitosa";
+            throw Error(data.messageDEV);
+        }
+
+        data.status = 200;
+        data.messageUSR = "La actualización de estatus <<SI>> fue exitosa";
+        data.dataRes = result;
+
+        bitacora = AddMSG(bitacora, data, 'OK', 200, true);
+
+        return OK(bitacora);
+
+    } catch (error) {
+        if (!data.status) data.status = error.statusCode;
+        let { message } = error;
+        if (!data.messageDEV) data.messageDEV = message;
+        if (!data.dataRes.length === 0) data.dataRes = error;
+        data.messageUSR = "La actualización de estatus <<NO>> fue exitosa";
+
+        bitacora = AddMSG(bitacora, data, 'FAIL');
+
+        return FAIL(bitacora);
+    } finally {
+        // Haya o no error siempre ejecuta aquí
+    }
+};
 //=============================================PARA SUBDOC RASTREOS DE SUBDOC ENVIOS=============================================
 export const AddRastreossrv = async (newInfoAd, queryParams) => {
     let bitacora = BITACORA();
@@ -1237,6 +1287,57 @@ export const AddRastreossrv = async (newInfoAd, queryParams) => {
     }
 };
 
+export const DeleteRastreossrv = async (queryParams) => {
+    let bitacora = BITACORA();
+    let data = DATA();
+
+    try {
+        bitacora.process = "Eliminar un rastreo de envío";
+        data.method = "DELETE";
+        data.api = `/shipping/subdocumentERa`;
+        data.process = "Eliminar un rastreo de envío";
+
+        const result = await Shippings.updateOne(
+            {
+                IdEntregaOK: queryParams.IdEntregaOK,
+                IdInstitutoOK: queryParams.IdInstitutoOK,
+                IdNegocioOK: queryParams.IdNegocioOK,
+                "envios.IdDomicilioOK": queryParams.IdDomicilioOK,
+                "envios.rastreos.NumeroGuia": queryParams.NumeroGuia,
+            },
+            {
+                $unset: { "envios.$.rastreos": 1 }
+            }
+        );
+
+        if (result.nModified === 0) {
+            data.status = 400;
+            data.messageDEV = "La eliminación de rastreo <<NO>> fue exitosa";
+            throw Error(data.messageDEV);
+        }
+
+        data.status = 200;
+        data.messageUSR = "La eliminación de rastreo <<SI>> fue exitosa";
+        data.dataRes = result;
+
+        bitacora = AddMSG(bitacora, data, 'OK', 200, true);
+
+        return OK(bitacora);
+
+    } catch (error) {
+        if (!data.status) data.status = error.statusCode;
+        let { message } = error;
+        if (!data.messageDEV) data.messageDEV = message;
+        if (!data.dataRes.length === 0) data.dataRes = error;
+        data.messageUSR = "La eliminación de rastreo <<NO>> fue exitosa";
+
+        bitacora = AddMSG(bitacora, data, 'FAIL');
+
+        return FAIL(bitacora);
+    } finally {
+        // Haya o no error siempre ejecuta aquí
+    }
+};
 //=============================================PARA SUBDOC SEGUIMIENTO DE SUBDOC ENVIOS=============================================
 export const AddSeguimientosrv = async (newInfoAd, queryParams) => {
     let bitacora = BITACORA();
