@@ -18,9 +18,9 @@ const routerAPI = (app) => {
     //Aqui se agrega la ruta de toda api nueva que se cree
     //----------------------------------------------------
     router.use('/pwa/shipping', shippingRoutes);
-    router.use('/pwa/etiquetas', etiquetasRoutes);
-    router.use('/pwa/ordenes', ordenesRoutes);
-    router.use('/pwa/personas', personasRoutes);
+    router.use('/pwa/labels', etiquetasRoutes);
+    router.use('/pwa/orders', ordenesRoutes);
+    router.use('/pwa/persons', personasRoutes);
     router.use('/pwa/institutes', institutesRoutes);
     //----------------------------------------------------
 
